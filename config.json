@@ -1,0 +1,21 @@
+{
+  "nick": "nodebot",
+  "username": "nodebot",
+  "realName": "nodeJS IRC Bot",
+  "password": "loliamnotahuman",
+  "servers": [
+    {
+      "address": "irc.datnode.net",
+      "channels": ["#nodebot-test"]
+    }
+  ],
+  "modules": [
+    "auth",
+    "join",
+    "part",
+    "connect",
+    "disconnect",
+    "loadModule",
+    "removeModule"
+  ]
+}
