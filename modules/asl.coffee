@@ -1,4 +1,4 @@
-asl =
+module.exports =
   name: 'asl'
   command: 'asl'
   func: (ftml) ->
@@ -8,4 +8,3 @@ asl =
     str += '/' + sexes[Math.floor(Math.random() * sexes.length)];
     str += '/' + locs[Math.floor(Math.random() * locs.length)];
     @client.say ftml[1], str  
-exports.asl = asl

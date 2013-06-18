@@ -1,4 +1,4 @@
-connect =
+module.exports =
   name: 'connect'
   command: 'connect'
   func: (ftmt, server) ->
@@ -8,4 +8,3 @@ connect =
         channels: []
       )
       @app.connections.push conn
-exports.connect = connect

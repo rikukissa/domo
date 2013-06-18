@@ -1,4 +1,4 @@
-urltitle =
+module.exports =
   name: 'urltitle'
   command: '*'
   func: (from, to, message, text) ->
@@ -12,4 +12,3 @@ urltitle =
             matches = body.match titleRegex
             if matches[1]?
               @client.say to, matches[1]
-exports.urltitle = urltitle

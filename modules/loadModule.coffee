@@ -1,4 +1,4 @@
-loadModule =
+module.exports =
   name: 'Module loader'
   command: 'loadModule'
   func: (ftml, name) ->
@@ -13,5 +13,3 @@ loadModule =
       @modules.push module[name]
     catch e
       @client.say ftml[0], 'Couln\'t load the module "' + name + '"'
-    
-exports.loadModule = loadModule

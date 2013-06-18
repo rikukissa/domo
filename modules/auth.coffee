@@ -1,4 +1,4 @@
-auth =
+module.exports =
   name: 'Auth module'
   command: '*'
   func: (from, to, message, text) ->
@@ -15,4 +15,3 @@ auth =
             @app.users.push user
         else
           @client.say from 'Wrong password!'
-exports.auth = auth

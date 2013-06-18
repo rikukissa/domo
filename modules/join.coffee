@@ -1,4 +1,4 @@
-join =
+module.exports =
   name: 'join'
   command: 'join'
   func: (ftmt, chan, pass) ->
@@ -7,4 +7,3 @@ join =
         chan += ' ' + pass
       @client.join chan, () =>
         @client.say chan, 'h'
-exports.join = join

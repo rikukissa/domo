@@ -1,4 +1,4 @@
-removeModule =
+module.exports =
   name: 'Module remover'
   command: 'removeModule'
   func: (ftml, name) ->
@@ -10,4 +10,3 @@ removeModule =
 
     @modules = modCache
     @client.say ftml[0], 'Module "' + name + '" removed.'
-exports.removeModule = removeModule
