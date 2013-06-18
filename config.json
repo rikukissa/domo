@@ -9,13 +9,5 @@
       "channels": ["#nodebot-test"]
     }
   ],
-  "modules": [
-    "auth",
-    "join",
-    "part",
-    "connect",
-    "disconnect",
-    "loadModule",
-    "removeModule"
-  ]
+  "modules": []
 }
