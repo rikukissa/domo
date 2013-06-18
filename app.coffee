@@ -1,11 +1,13 @@
-fs = require('fs')
-irc = require('irc')
-request = require('request')
+
+_   = require 'underscore'
+fs  = require 'fs'
+irc = require 'irc'
 
 class Application
   constructor: () ->
     console.log 'IRCbot loaded'
     @config = JSON.parse fs.readFileSync('./config.json')
+    
     @users = []
     @connections = []
 
@@ -18,23 +20,17 @@ class Application
 class Connection
   constructor: (@app, @config) ->
     console.log 'Connecting to ' + @config.address
-    @connection = Connection
-    @client = new irc.Client(@config.address, @app.config.nick,
+        
+    @client = new irc.Client @config.address, @app.config.nick,
       channels: @config.channels
-      autoConnect: false
       userName: @app.config.userName
       realName: @app.config.realName
-    )
     
-    # Load modules
-    @modules = []
-    for mod in @app.config.modules
-      m = require(__dirname + '/modules/' + mod)
-      @modules.push m[mod]
+    @loadModules()
 
-    @client.connect()
     @client.addListener 'error', (message) ->
       console.log 'error: ', message
+    
     @client.addListener 'registered', () =>
       console.log 'Connected to server ' + @config.address        
       @client.addListener 'message', (from, to, message, text) =>
@@ -54,6 +50,13 @@ class Connection
               args = [arguments]
               args = args.concat arg
               mod.func.apply(this, args)
+  
+  loadModules: ->
+    @modules = _.map @app.config.modules, (mod) =>
+      m = require(__dirname + '/modules/' + mod)
+      console.log m
+      return m[mod] 
+
   checkAuth: (nick, callback) ->
     @client.whois nick, (data) =>
       user = data.user + '@' + data.host
