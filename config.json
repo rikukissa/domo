@@ -1,13 +1,19 @@
 {
-  "nick": "nodebot",
-  "username": "nodebot",
-  "realName": "nodeJS IRC Bot",
-  "password": "loliamnotahuman",
+  "nick": "Domo",
+  "username": "Domo",
+  "realName": "Domo the awesome IRC bot",
   "servers": [
     {
-      "address": "irc.datnode.net",
-      "channels": ["#nodebot-test"]
+      "address": "irc.quakenet.org",
+      "channels": ["#riku"],
+      "users": [
+        {
+          "username": "riku",
+          "password": "admin"
+        }
+      ]
     }
   ],
+  "users": [],
   "modules": []
 }
