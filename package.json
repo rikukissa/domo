@@ -1,6 +1,6 @@
 {
-  "name": "node-ircbot",
-  "version": "0.0.1",
+  "name": "Domo",
+  "version": "0.2.0",
   "engines": {
     "node": "0.9.3"
   },
@@ -8,5 +8,18 @@
     "irc": "0.3.4",
     "underscore": "~1.4.4",
     "sandbox": "~0.8.3"
-  }
+  },
+  "readmeFilename": "README.md",
+  "description": "node-ircbot ===========",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/rikukissa/node-ircbot.git"
+  },
+  "keywords": [
+    "irc",
+    "bot"
+  ],
+  "author": "Riku Rouvila",
+  "license": "BSD"
 }
