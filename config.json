@@ -1,11 +1,13 @@
 {
   "nick": "Domo",
   "username": "Domo",
-  "realName": "Domo the awesome IRC bot",
+  "realName": "Domo the awesome IRC-bot",
   "servers": [
     {
-      "address": "irc.quakenet.org",
-      "channels": ["#riku"],
+      "address": "irc.datnode.net",
+      "channels": [
+        "#testi1"
+      ],
       "users": [
         {
           "username": "riku",

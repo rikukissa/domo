@@ -1,5 +1,7 @@
 _        = require 'underscore'
+fs       = require 'fs'
 irc      = require 'irc'
+
 Commands = require('./commands')
 
 class Connection
@@ -24,9 +26,10 @@ class Connection
       console.log 'Connected to server ' + @serverConfig.address        
       @client.addListener 'message', @commands.fetch
 
-    @loadModules()
-
-  authenticate: (username, password, address) ->
+  authenticate: (prefix) =>
+    return @authedUsers.indexOf(prefix) > -1
+  
+  auth: (username, password, address) ->
     @globalConfig.users = @globalConfig.users || []
     @serverConfig.users = @serverConfig.users || []
 
@@ -37,10 +40,10 @@ class Connection
         return @authedUsers.push address 
 
     return false
-
-  loadModules: ->
-    @modules = _.map @globalConfig.modules, (mod) =>
-      return require(__dirname + '/modules/' + mod)
-
+  
+  saveConfig: ->
+    fs.writeFile './config.json', JSON.stringify(@globalConfig, null, 2), (err) ->
+      return console.log err if err?
+  
 
 module.exports = Connection
