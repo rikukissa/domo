@@ -6,6 +6,7 @@
   },
   "dependencies": {
     "irc": "0.3.4",
-    "underscore": "~1.4.4"
+    "underscore": "~1.4.4",
+    "sandbox": "~0.8.3"
   }
 }
