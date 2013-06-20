@@ -35,6 +35,8 @@ class Connection
 
     availableUsers = @globalConfig.users.concat @serverConfig.users
 
+    return false if @authedUsers.indexOf(address) > -1
+
     for user in availableUsers
       if user.username == username && user.password == password
         return @authedUsers.push address 
