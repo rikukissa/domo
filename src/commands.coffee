@@ -43,7 +43,7 @@ class Commands
             @connection.client.part(channel, =>
               console.log "#{Date.now()}: Left channel #{channel}"
             ) 
-      'save': (nick, channel, msg, info) ->
+      'save$': (nick, channel, msg, info) ->
         return unless @connection.authenticate(info.prefix)
         @connection.saveConfig()
       
