@@ -31,6 +31,26 @@ class Commands
             @connection.client.join(channel, =>
               console.log "#{Date.now()}: Joined channel #{channel}"
             ) 
+      
+      'nick ': (nick, channel, msg, info) ->
+        return unless @connection.authenticate(info.prefix)
+        
+        return (=>
+          @connection.client.say channel, "Thats already my nickname!"
+        )() if msg == @connection.client.nick
+        
+        success = (oldNick, newNick, channels)=>
+          @connection.client.removeListener 'error', error
+          @connection.client.nick = newNick
+        
+        error = =>
+          @connection.client.say channel, "Couldn't change my nickname to #{msg}!"
+          @connection.client.removeListener 'nick', success
+
+        @connection.client.once 'nick', success
+        @connection.client.once 'error', error
+
+        @connection.client.send 'NICK', msg
 
       'part ': (nick, channel, msg, info) ->
         return unless @connection.authenticate(info.prefix)
@@ -114,6 +134,7 @@ class Commands
       return func.apply(this, arguments) 
 
     for module in @modules
+      continue unless module.match? or not module.onMessage?
       regex = new RegExp('^!' + module.match, 'i')
       continue unless regex.test msg
       arguments[2] = arguments[2].replace regex, ''

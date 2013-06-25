@@ -34,6 +34,8 @@ coffee domo.coffee
   * Print bot info
 * !auth &lt;username&gt; &lt;password&gt;
   * Authenticate (Probably better to do this with private message)
+* !nick <nickname>
+  * Change Domo's nickname
 * !join [channels..]
   * __Requires authentication__
   * Tell Dōmo-kun to join channels (supports multiple arguments as a space separated string)
