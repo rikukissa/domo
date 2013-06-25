@@ -13,6 +13,9 @@ npm install
 ```
 
 ## Configuration
+
+Edit the config.example.json file and rename it to config.json
+
 * nick, username, realName
   * Basic IRC configuration. Self-explanatory.
 * servers

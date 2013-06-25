@@ -5,14 +5,14 @@
   "debug": true,
   "servers": [
     {
-      "address": "irc.datnode.net",
+      "address": "irc.quakenet.org",
       "channels": [
-        "#testi1"
+        "#riku"
       ],
       "users": [
         {
-          "username": "riku",
-          "password": "admin"
+          "username": "admin",
+          "password": "password"
         }
       ]
     }
