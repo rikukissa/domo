@@ -68,7 +68,7 @@ class Commands
           h :) v#{pack.version} 
           Current channels: #{(chan for chan of @connection.client.chans).join(', ')}
 
-          I live here: https://github.com/rikukissa/node-ircbot
+          I live here: #{pack.repository.url}
           """
 
   stopModule: (mod) =>
@@ -89,13 +89,15 @@ class Commands
       console.log err
       return false
 
-    if @connection.globalConfig.modules.indexOf(mod) == -1
+    # Add module to config
+    if @connection.globalConfig.modules.indexOf(mod) is -1
       @connection.globalConfig.modules.push mod 
 
     console.log "#{Date.now()}: Loaded module #{mod}"
     
-    if @modules.indexOf module
+    if @modules.indexOf(module) is -1
       @modules.push module 
+      module.init?(@connection)
       return true
     
     return false
