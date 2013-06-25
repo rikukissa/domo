@@ -27,7 +27,7 @@ npm install
 
 ## Starting things up
 ```
-coffee app.coffee
+coffee domo.coffee
 ```
 ## Commands
 * !domo
