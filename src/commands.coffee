@@ -34,23 +34,8 @@ class Commands
       
       'nick ': (nick, channel, msg, info) ->
         return unless @connection.authenticate(info.prefix)
-        
-        return (=>
-          @connection.client.say channel, "Thats already my nickname!"
-        )() if msg == @connection.client.nick
-        
-        success = (oldNick, newNick, channels)=>
-          @connection.client.removeListener 'error', error
-          @connection.client.nick = newNick
-        
-        error = =>
-          @connection.client.say channel, "Couldn't change my nickname to #{msg}!"
-          @connection.client.removeListener 'nick', success
-
-        @connection.client.once 'nick', success
-        @connection.client.once 'error', error
-
-        @connection.client.send 'NICK', msg
+        @setNick msg, (err, newNick) =>
+          @connection.client.say channel, "Couldn't change my nickname to #{msg}!" if err?
 
       'part ': (nick, channel, msg, info) ->
         return unless @connection.authenticate(info.prefix)
@@ -90,6 +75,22 @@ class Commands
 
           I live here: #{pack.repository.url}
           """
+
+  setNick: (nick, callback) ->
+    return callback 'Nickname is already set' if @connection.client.nick is nick
+    
+    success = (oldNick, newNick, channels)=>
+      @connection.client.removeListener 'error', error
+      @connection.client.nick = newNick
+      callback?(null, newNick)
+      
+    error = (err) =>
+      @connection.client.removeListener 'nick', success
+      callback?(err)
+
+    @connection.client.once 'nick', success
+    @connection.client.once 'error', error
+    @connection.client.send 'NICK', nick
 
   stopModule: (mod) =>
     try
