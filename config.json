@@ -2,6 +2,7 @@
   "nick": "Domo",
   "username": "Domo",
   "realName": "Domo the awesome IRC-bot",
+  "debug": true,
   "servers": [
     {
       "address": "irc.datnode.net",

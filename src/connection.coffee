@@ -20,7 +20,7 @@ class Connection
     @commands = new Commands @
 
     @client.addListener 'error', (message) ->
-      console.log 'error: ', message
+      console.log 'error: ', message if globalConfig.debug
     
     @client.addListener 'registered', () =>
       console.log 'Connected to server ' + @serverConfig.address        
