@@ -51,4 +51,7 @@ coffee domo.coffee
 * !load &lt;module&gt;
   * __Requires authentication__
   * Load domo module from node_modules directory
+* !stop &lt;module&gt;
+  * __Requires authentication__
+  * Stop module and detach it from message events
 ![alt text](http://1.bp.blogspot.com/-VJRt-hZit4I/TbjjDINykBI/AAAAAAAABts/E3L3GFL5_hs/s800/09299bd81d5c92fc1e5461d8e04b2e64.gif "Domo")
