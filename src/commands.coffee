@@ -7,9 +7,11 @@ pack = JSON.parse fs.readFileSync('./package.json')
 class Commands
   constructor: (@connection) ->
     @cache = []
-    @modules = []
+    @modules = {}
 
-    _.each @connection.globalConfig.modules, @loadModule
+    _.each @connection.globalConfig.modules, (module) => do (module) =>
+        @loadModule module, (err) ->
+          console.log err if err?
 
     @actions =
       'auth ': (nick, channel, msg, info) ->
@@ -54,17 +56,16 @@ class Commands
       
       'load ': (nick, channel, msg, info) ->
         return unless @connection.authenticate(info.prefix)
-        if @loadModule msg
+        @loadModule msg, (err) =>
+          return @connection.client.say channel, err if err?
           @connection.client.say channel, "Module #{msg} loaded :)"
-        else
-          @connection.client.say channel, "Couldn't load module #{msg}"
 
       'stop ': (nick, channel, msg, info) ->
         return unless @connection.authenticate(info.prefix)
-        if @stopModule msg
-          @connection.client.say channel, "Module #{msg} stopped"
-        else
-          @connection.client.say channel, "Couldn't find module #{msg}"
+        @stopModule msg, (err) =>
+          @connection.client.say channel, err if err?
+          
+          @connection.client.say channel, "Module #{msg} detached"
 
       # Globals
       'domo$': (nick, channel, msg, info) ->
@@ -92,23 +93,21 @@ class Commands
     @connection.client.once 'error', error
     @connection.client.send 'NICK', nick
 
-  stopModule: (mod) =>
-    try
-      module = require(mod) 
-    catch err
-      console.log err
-      return false
+  stopModule: (mod, cb) =>
+    return cb?("Module #{mod} not loaded") unless @modules.hasOwnProperty mod
+
     if (index = @connection.globalConfig.modules.indexOf(mod)) > -1
       @connection.globalConfig.modules.splice index, 1    
-    @modules.splice @modules.indexOf(module), 1
-    true
 
-  loadModule: (mod) =>
+    delete require.cache[require.resolve(mod)]
+    delete @modules[mod]
+    return cb?(null)
+
+  loadModule: (mod, cb) =>
     try
       module = require(mod) 
     catch err
-      console.log err
-      return false
+      return cb?("Module #{mod} not found")
 
     # Add module to config
     if @connection.globalConfig.modules.indexOf(mod) is -1
@@ -116,12 +115,11 @@ class Commands
 
     console.log "#{Date.now()}: Loaded module #{mod}"
     
-    if @modules.indexOf(module) is -1
-      @modules.push module 
-      module.init?(@connection)
-      return true
-    
-    return false
+    cb?("Module #{mod} already loaded") if @modules.hasOwnProperty mod
+
+    @modules[mod] = module 
+    module.init?(@connection)
+    cb(null)
 
   fetch: (nick, channel, msg, message) =>
     @cache.unshift arguments
@@ -134,7 +132,7 @@ class Commands
       arguments[2] = arguments[2].replace regex, ''
       return func.apply(this, arguments) 
 
-    for module in @modules
+    for name, module of @modules
       continue unless module.match? or not module.onMessage?
       regex = new RegExp('^!' + module.match, 'i')
       continue unless regex.test msg
