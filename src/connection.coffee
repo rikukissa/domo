@@ -17,13 +17,13 @@ class Connection
       userName: serverConfig.userName || globalConfig.userName
       realName: serverConfig.realName || globalConfig.realName
     
-    @commands = new Commands @
 
     @client.addListener 'error', (message) ->
       console.log 'error: ', message if globalConfig.debug
     
     @client.addListener 'registered', () =>
       console.log 'Connected to server ' + @serverConfig.address        
+      @commands = new Commands @
       @client.addListener 'message', @commands.fetch
 
   authenticate: (prefix) =>
