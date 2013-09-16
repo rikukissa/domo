@@ -1,12 +1,18 @@
-
-_   = require 'underscore'
 fs  = require 'fs'
 irc = require 'irc'
+_   = require 'underscore'
 
-Connection = require './src/connection'
+console.log 'Domo initializing'
 
-console.log 'IRCbot loaded'
+Domo = require './src/Domo'
+
+Controller = require './src/controller'
 
 config = JSON.parse fs.readFileSync('./config.json')
 
-new Connection config, server for server in config.servers
+for server in config.servers
+  domo = new Domo(_.extend(config.global, server))
+
+  domo.connect()
+
+  new Controller().register domo

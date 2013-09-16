@@ -7,8 +7,8 @@
   "dependencies": {
     "irc": "0.3.4",
     "underscore": "~1.4.4",
-    "sandbox": "~0.8.3",
-    "domo-eval": ">=0.2.1"
+    "domo-eval": ">=0.2.1",
+    "routes": "~0.2.0"
   },
   "readmeFilename": "README.md",
   "description": "node-ircbot ===========",
