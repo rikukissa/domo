@@ -6,6 +6,7 @@ _ = require 'underscore'
 class Domo extends EventEmitter
   constructor: (@config) ->
     @router = new Router
+    @modules = {}
 
   error: (msg) ->
     console.log 'Error:', msg if @config.debug?
@@ -18,6 +19,38 @@ class Domo extends EventEmitter
 
   join: (channel, cb) ->
     @client.join channel, cb
+
+  loadModule: (mod, cb) =>
+    try
+      module = require(mod)
+    catch err
+      msg = "Module #{mod} not found"
+      @error msg
+      return cb?(msg)
+
+    @notify "Loaded module #{mod}"
+
+    if @modules.hasOwnProperty mod
+      msg = "Module #{mod} already loaded"
+      @error msg
+      return cb?(msg)
+
+    @modules[mod] = module
+    module.init?(@)
+    cb(null)
+
+  stopModule: (mod, cb) =>
+    unless @modules.hasOwnProperty mod
+      msg = "Module #{mod} not loaded"
+      @error msg
+      return cb?(msg)
+
+    delete require.cache[require.resolve(mod)]
+    delete @modules[mod]
+
+    @notify "Stopped module #{mod}"
+
+    return cb?(null)
 
   connect: ->
     @client = new irc.Client @config.address, @config.nick, @config
