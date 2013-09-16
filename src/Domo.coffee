@@ -16,6 +16,9 @@ class Domo extends EventEmitter
   say: (channel, msg) ->
     @client.say channel, msg
 
+  join: (channel, cb) ->
+    @client.join channel, cb
+
   connect: ->
     @client = new irc.Client @config.address, @config.nick, @config
 
