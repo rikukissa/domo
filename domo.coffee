@@ -4,7 +4,7 @@ _   = require 'underscore'
 
 console.log 'Domo initializing'
 
-Domo = require './src/Domo'
+Domo = require './src/domo'
 
 Controller = require './src/controller'
 
