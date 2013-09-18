@@ -2,7 +2,6 @@ EventEmitter = require('events').EventEmitter
 Router = require 'routes'
 irc   = require 'irc'
 _     = require 'underscore'
-_.str = require 'underscore.string'
 colors = require 'colors'
 
 class Domo extends EventEmitter
@@ -10,6 +9,9 @@ class Domo extends EventEmitter
     @router = new Router
     @modules = {}
     @authedClients = []
+    @middlewares = []
+
+    @use @constructRes
 
   error: (msg) ->
     console.log 'Error:'.red, msg.red if @config.debug?
@@ -17,7 +19,7 @@ class Domo extends EventEmitter
   notify: (msg) ->
     console.log 'Notify:'.green, msg.green
 
-  say: (channel, msg) ->
+  say: (channel, msg) =>
     @client.say channel, msg
 
   join: (channel, cb) ->
@@ -69,25 +71,14 @@ class Domo extends EventEmitter
       @notify "Connected to server #{@config.address}.\n\tChannels joined: #{@config.channels.join(', ')}"
       @emit.apply this, arguments
 
-    @client.addListener 'message', (nick, channel, msg, data) =>
+    @client.addListener 'message', (nick, channel, msg, res) =>
       @emit.apply this, arguments
-      @match msg, @formatResult data
+      @match msg, res
 
     @channels = @client.chans
 
     return @client
 
-  formatResult: (res) ->
-    res.channel = res.args[0]
-    res.message = res.args[1]
-    res.username = res.user
-
-    res.user = unless @authedClients.hasOwnProperty(res.prefix)
-      null
-    else
-      @authedClients[res.prefix]
-
-    return res
 
   route: (path, middlewares..., fn) ->
     @router.addRoute path, @wrap(fn, middlewares)
@@ -98,24 +89,40 @@ class Domo extends EventEmitter
 
   wrap: (fn, middlewares) -> () =>
     args = Array.prototype.slice.call(arguments, 0)
-    _.reduceRight(middlewares, (memo, item) =>
+    _.reduceRight(@middlewares.concat(middlewares), (memo, item) =>
       next = => memo.apply this, args
       return -> item.apply this, _.flatten([args, next], true)
     , fn).apply this, arguments
 
+  use: (mw) ->
+    @middlewares.push mw
+
+  constructRes: (res, next) ->
+    res.channel = res.args[0]
+    res.message = res.args[1]
+    res.username = res.user
+
+    res.user = unless @authedClients.hasOwnProperty(res.prefix)
+      null
+    else
+      @authedClients[res.prefix]
+
+    next()
+
   authenticate: (res, next) ->
     return @error "Tried to authenticate. No users configured" unless @config.users?
+    return @say res.channel, "You are already authed." if @authedClients.hasOwnProperty res.prefix
 
-    user = _.findWhere(@config.users, {username: res.params.username, password: res.params.password})
+    user = res.user = _.findWhere(@config.users, {username: res.params.username, password: res.params.password})
 
     unless user?
       @error "User #{res.prefix} tried to authenticate with bad credentials"
       return @say res.channel, "Authentication failed. Bad credentials."
 
-    @say res.channel, "You are already authed." if @authedClients.hasOwnProperty res.prefix
-
     @authedClients[res.prefix] = user
-    @say res.channel, "You are now authed. Hi #{_.str.capitalize(user.username)}"
+
     next()
+
+
 
 module.exports = Domo

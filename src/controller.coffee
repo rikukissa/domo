@@ -1,7 +1,8 @@
-fs = require 'fs'
+fs    = require 'fs'
+_     = require 'underscore'
+_.str = require 'underscore.string'
 
 pack = JSON.parse fs.readFileSync('./package.json')
-
 
 class Controller
   register: (domo) ->
@@ -12,6 +13,7 @@ class Controller
         I live here: #{pack.repository.url}
         """
     domo.route '!auth :username :password', domo.authenticate, (res) ->
+      domo.say res.channel, "You are now authed. Hi #{_.str.capitalize(res.user.username)}!"
 
     domo.route '!join :channel', (res) ->
       domo.join res.params.channel
