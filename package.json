@@ -8,7 +8,9 @@
     "irc": "0.3.4",
     "underscore": "~1.4.4",
     "domo-eval": ">=0.2.1",
-    "routes": "~0.2.0"
+    "routes": "~0.2.0",
+    "underscore.string": "~2.3.3",
+    "colors": "~0.6.2"
   },
   "readmeFilename": "README.md",
   "description": "node-ircbot ===========",

@@ -1,18 +1,21 @@
 EventEmitter = require('events').EventEmitter
 Router = require 'routes'
-irc = require 'irc'
-_ = require 'underscore'
+irc   = require 'irc'
+_     = require 'underscore'
+_.str = require 'underscore.string'
+colors = require 'colors'
 
 class Domo extends EventEmitter
   constructor: (@config) ->
     @router = new Router
     @modules = {}
+    @authedClients = []
 
   error: (msg) ->
-    console.log 'Error:', msg if @config.debug?
+    console.log 'Error:'.red, msg.red if @config.debug?
 
   notify: (msg) ->
-    console.log 'Notify:', msg
+    console.log 'Notify:'.green, msg.green
 
   say: (channel, msg) ->
     @client.say channel, msg
@@ -74,32 +77,45 @@ class Domo extends EventEmitter
 
     return @client
 
-  formatResult: (resObj) ->
-    resObj.channel = resObj.args[0]
-    resObj.message = resObj.args[1]
-    resObj
+  formatResult: (res) ->
+    res.channel = res.args[0]
+    res.message = res.args[1]
+    res.username = res.user
 
-  wrap: (fn, middlewares) -> () ->
-    args = Array.prototype.slice.call(arguments, 0)
-    _.reduceRight(middlewares, (memo, item) ->
-      next = -> memo.apply this, args
-      return -> item.apply this, _.flatten([args, next], true)
-    , fn).apply this, arguments
+    res.user = unless @authedClients.hasOwnProperty(res.prefix)
+      null
+    else
+      @authedClients[res.prefix]
+
+    return res
 
   route: (path, middlewares..., fn) ->
-    @router.addRoute path, () =>
-      @wrap(fn, middlewares).apply this, arguments
+    @router.addRoute path, @wrap(fn, middlewares)
 
   match: (path, data) ->
     return unless (result = @router.match path)?
-
     result.fn.call this, _.extend result, data
 
-Domo::TestMiddle = (res, next) -> next()
+  wrap: (fn, middlewares) -> () =>
+    args = Array.prototype.slice.call(arguments, 0)
+    _.reduceRight(middlewares, (memo, item) =>
+      next = => memo.apply this, args
+      return -> item.apply this, _.flatten([args, next], true)
+    , fn).apply this, arguments
 
-Domo::RequiresUser = (next) ->
-  return (res) =>
-    return next() if res.user?
-    @say res.channel, "User required for this action"
+  authenticate: (res, next) ->
+    return @error "Tried to authenticate. No users configured" unless @config.users?
+
+    user = _.findWhere(@config.users, {username: res.params.username, password: res.params.password})
+
+    unless user?
+      @error "User #{res.prefix} tried to authenticate with bad credentials"
+      return @say res.channel, "Authentication failed. Bad credentials."
+
+    @say res.channel, "You are already authed." if @authedClients.hasOwnProperty res.prefix
+
+    @authedClients[res.prefix] = user
+    @say res.channel, "You are now authed. Hi #{_.str.capitalize(user.username)}"
+    next()
 
 module.exports = Domo

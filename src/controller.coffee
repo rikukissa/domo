@@ -2,6 +2,7 @@ fs = require 'fs'
 
 pack = JSON.parse fs.readFileSync('./package.json')
 
+
 class Controller
   register: (domo) ->
     domo.route '!domo', (res) ->
@@ -10,6 +11,8 @@ class Controller
         Current channels: #{(chan for chan of domo.channels).join(', ')}
         I live here: #{pack.repository.url}
         """
+    domo.route '!auth :username :password', domo.authenticate, (res) ->
+
     domo.route '!join :channel', (res) ->
       domo.join res.params.channel
 
