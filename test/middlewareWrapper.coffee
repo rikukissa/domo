@@ -75,3 +75,13 @@ describe 'Middleware wrapper', ->
 
     domo.wrap(fn, [mw1, mw2])('hello', 'world')
 
+  it 'should remain the context', (done) ->
+    domo = new Domo()
+    mw1 = (a, b, next) -> next()
+    mw2 = (a, b, next) -> next()
+
+    fn = (a, b) ->
+      assert.equal this, domo
+      done()
+
+    domo.wrap(fn, [mw1, mw2])('hello', 'world')
