@@ -1,22 +1,19 @@
 {
-  "nick": "Domo",
-  "username": "Domo",
-  "realName": "Domo the awesome IRC-bot",
-  "debug": true,
+  "global": {
+    "nick": "Domo",
+    "userName": "Domo",
+    "realName": "Domo the awesome IRC-bot",
+    "modules": ["domo-eval"],
+    "users": [{
+      "username": "riku",
+      "password": "admin"
+    }],
+    "debug": true
+  },
   "servers": [
     {
-      "address": "irc.quakenet.org",
-      "channels": [
-        "#riku"
-      ],
-      "users": [
-        {
-          "username": "admin",
-          "password": "password"
-        }
-      ]
+      "address": "irc.datnode.net",
+      "channels": ["#riku"]
     }
-  ],
-  "users": [],
-  "modules": []
+  ]
 }
