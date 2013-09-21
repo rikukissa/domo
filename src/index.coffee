@@ -1,8 +1,49 @@
+fs           = require 'fs'
+irc          = require 'irc'
+colors       = require 'colors'
+Router       = require 'routes'
 EventEmitter = require('events').EventEmitter
-Router = require 'routes'
-irc   = require 'irc'
-_     = require 'underscore'
-colors = require 'colors'
+_            = require 'underscore'
+_.str        = require 'underscore.string'
+
+
+pack = JSON.parse fs.readFileSync "#{__dirname}/package.json"
+
+requiresUser = (res, next) ->
+  unless res.user?
+    @say res.channel, "This route is for users only"
+    return @error "User #{res.prefix} tried to use '#{res.route}' route"
+  next()
+
+registerDefaultRoutes = (domo) ->
+  domo.route '!domo', (res) ->
+    domo.say res.channel, """
+      h :) v#{pack.version}
+      Current channels: #{(chan for chan of domo.channels).join(', ')}
+      I live here: #{pack.repository.url}
+      """
+  domo.route '!auth :username :password', domo.authenticate, (res) ->
+    domo.say res.channel, "You are now authed. Hi #{_.str.capitalize(res.user.username)}!"
+
+  domo.route '!join :channel', requiresUser, (res) ->
+    domo.join res.params.channel
+
+  domo.route '!join :channel :password', requiresUser, (res) ->
+    domo.join res.params.channel + ' ' + res.params.password
+
+  domo.route '!part :channel', requiresUser, (res) ->
+    domo.part res.params.channel
+
+  domo.route '!load :module', requiresUser, (res) ->
+    domo.load res.params.module, (err) ->
+      return domo.say res.channel, err if err?
+      domo.say res.channel, "Module '#{res.params.module}' loaded!"
+
+  domo.route '!stop :module', requiresUser, (res) ->
+    domo.stop res.params.module, (err) ->
+      domo.say res.channel, err if err?
+      domo.say res.channel, "Module '#{res.params.module}' stopped!"
+
 
 class Domo extends EventEmitter
   constructor: (@config) ->
@@ -12,6 +53,8 @@ class Domo extends EventEmitter
     @middlewares = []
 
     @use @constructRes
+
+    registerDefaultRoutes @
 
   error: (msg) ->
     console.log 'Error:'.red, msg.red if @config.debug?
@@ -28,7 +71,7 @@ class Domo extends EventEmitter
   part: (channel, cb) ->
     @client.part channel, cb
 
-  loadModule: (mod, cb) =>
+  load: (mod, cb) =>
     try
       module = require(mod)
     catch err
@@ -36,18 +79,18 @@ class Domo extends EventEmitter
       @error msg
       return cb?(msg)
 
-    @notify "Loaded module #{mod}"
-
     if @modules.hasOwnProperty mod
       msg = "Module #{mod} already loaded"
       @error msg
       return cb?(msg)
 
+    @notify "Loaded module #{mod}"
+
     @modules[mod] = module
     module.init?(@)
     cb(null)
 
-  stopModule: (mod, cb) =>
+  stop: (mod, cb) =>
     unless @modules.hasOwnProperty mod
       msg = "Module #{mod} not loaded"
       @error msg

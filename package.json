@@ -1,19 +1,23 @@
 {
-  "name": "Domo",
-  "version": "1.0.0",
+  "name": "Domo-kun",
+  "version": "0.1.0",
   "engines": {
     "node": "0.9.3"
   },
   "dependencies": {
     "irc": "0.3.4",
     "underscore": "~1.4.4",
-    "routes": "~0.2.0",
     "underscore.string": "~2.3.3",
+    "routes": "~0.2.0",
     "colors": "~0.6.2"
   },
   "readmeFilename": "README.md",
-  "description": "node-ircbot ===========",
-  "devDependencies": {},
+  "description": "The most awesome thing ever",
+  "devDependencies": {
+    "james": "~0.1.15",
+    "james-uglify": "~0.1.0",
+    "james-coffee": "~0.1.1"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/rikukissa/domo.git"
