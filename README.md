@@ -1,6 +1,8 @@
 # Domo
 [NPM Package](https://npmjs.org/package/domo-kun)
 
+[Usage example in JavaScript](https://github.com/rikukissa/domo-example)
+
 * Best irc-bot ever
 * Easy to configure
 
