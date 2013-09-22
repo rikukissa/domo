@@ -49,6 +49,8 @@ class Domo extends EventEmitter
 
     registerDefaultRoutes @
 
+    @load module for module in @config.modules if @config.modules?
+
   error: (msg) ->
     console.log 'Error:'.red, msg.red if @config.debug?
 
