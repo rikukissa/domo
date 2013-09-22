@@ -1,58 +1,75 @@
 # Domo
+[NPM Package](https://npmjs.org/package/domo-kun)
 
 * Best irc-bot ever
 * Easy to configure
-* Creating plugins for Domo is the most awesome thing ever
 
-## Installation
+## Get Domo-kun
 
 ```
-git clone git@github.com:rikukissa/domo.git
-cd domo
 npm install
+```
+```
+var Domo, domo;
+Domo = require('domo-kun');
+domo = new Domo(config);
+domo.connect();
 ```
 
 ## Configuration
+````
+var config = {
+  nick: 'Domo',
+  userName: 'Domo',
+  realName: 'Domo the awesome IRC-bot',
+  address: 'irc.quakenet.org',
+  channels: ['#riku'],
+  users: [{ // Array of users able to control your Domo instance
+      username: 'admin',
+      password: 'lolwut'
+    }],
+  modules: ['domo-eval'], // Modules to be loaded when Domo connects
+  debug: true
+};
 
-Edit the config.example.json file and rename it to config.json
+````
+## Creating routes
 
-* nick, username, realName
-  * Basic IRC configuration. Self-explanatory.
-* servers
-  * List of servers and their configuration
-    * __address__ - server address
-    * __channels__ - channels to automatically join
-    * __users__ - list of authorized users
-* users
-  * List of authorized users
-* modules
-  * Modules to load on startup
+domo.route(path, callback);
 
-## Starting things up
-```
-coffee domo.coffee
-```
-## Commands
+For routing Domo uses routes library. Received IRC messages are matched to defined paths and the callback functions are called.
+
+````
+domo.route('Hello Domo!', function(res) {
+  this.say(res.channel, 'Hi ' + res.nick + '!');
+});
+````
+## Built in IRC Commands
 * !domo
-  * Print bot info
+  * Print Domo info
+
+
 * !auth &lt;username&gt; &lt;password&gt;
   * Authenticate (Probably better to do this with private message)
-* !nick <nickname>
-  * Change Domo's nickname
-* !join [channels..]
+
+
+* !join &lt;channel&gt; &lt;password&gt;
   * __Requires authentication__
-  * Tell Dōmo-kun to join channels (supports multiple arguments as a space separated string)
+  * Tell Dōmo-kun to join channel
+
+
 * !part [channels..]
   * __Requires authentication__
-  * Tell Dōmo-kun to leave channels (supports multiple arguments as a space separated string)
-* !save
-  * __Requires authentication__
-  * Save current state (channels, modules...) to config.json
+  * Tell Dōmo-kun to leave channel
+
+
 * !load &lt;module&gt;
   * __Requires authentication__
   * Load domo module from node_modules directory
+
+
 * !stop &lt;module&gt;
   * __Requires authentication__
   * Stop module and detach it from message events
-  
+
 ![alt text](http://1.bp.blogspot.com/-VJRt-hZit4I/TbjjDINykBI/AAAAAAAABts/E3L3GFL5_hs/s800/09299bd81d5c92fc1e5461d8e04b2e64.gif "Domo")
