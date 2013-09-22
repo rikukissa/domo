@@ -37,13 +37,39 @@ var config = {
 
 domo.route(path, callback);
 
-For routing Domo uses routes library. Received IRC messages are matched to defined paths and the callback functions are called.
+For routing Domo uses [routes](https://github.com/aaronblohowiak/routes.js) library. Received IRC messages are matched to defined paths and the callback functions are called.
 
 ````
 domo.route('Hello Domo!', function(res) {
   this.say(res.channel, 'Hi ' + res.nick + '!');
 });
 ````
+## Middlewares
+
+You can specify route specific middleware functions by adding them as arguments before the callback function.
+
+````
+// Only responds if the user who sends the message is authenticated
+domo.route('Hello Domo!', domo.requiresUser, function(res) {
+  this.say(res.channel, 'Hi ' + res.nick + '!');
+});
+````
+
+Currently the only built-in middleware is __domo.requiresUser__, that checks if the user who sends a message is authenticated.
+Creating custom middlewares is also possible.
+#### Example middleware
+````
+// Reverses received messages
+var reverseMessages = function(res, next) {
+    res.message = res.message.split('').reverse().join('');
+    next();
+};
+````
+It's now possible to use the new middleware like in the example above. It's also possible to use it automatically for all routes by registering it with __domo.use__ method.
+````
+domo.use(reverseMessages);
+````
+
 ## Built in IRC Commands
 * !domo
   * Print Domo info
