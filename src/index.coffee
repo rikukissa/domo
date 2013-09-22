@@ -6,14 +6,7 @@ EventEmitter = require('events').EventEmitter
 _            = require 'underscore'
 _.str        = require 'underscore.string'
 
-
 pack = JSON.parse fs.readFileSync "#{__dirname}/package.json"
-
-requiresUser = (res, next) ->
-  unless res.user?
-    @say res.channel, "This route is for users only"
-    return @error "User #{res.prefix} tried to use '#{res.route}' route"
-  next()
 
 registerDefaultRoutes = (domo) ->
   domo.route '!domo', (res) ->
@@ -25,21 +18,21 @@ registerDefaultRoutes = (domo) ->
   domo.route '!auth :username :password', domo.authenticate, (res) ->
     domo.say res.channel, "You are now authed. Hi #{_.str.capitalize(res.user.username)}!"
 
-  domo.route '!join :channel', requiresUser, (res) ->
+  domo.route '!join :channel', domo.requiresUser, (res) ->
     domo.join res.params.channel
 
-  domo.route '!join :channel :password', requiresUser, (res) ->
+  domo.route '!join :channel :password', domo.requiresUser, (res) ->
     domo.join res.params.channel + ' ' + res.params.password
 
-  domo.route '!part :channel', requiresUser, (res) ->
+  domo.route '!part :channel', domo.requiresUser, (res) ->
     domo.part res.params.channel
 
-  domo.route '!load :module', requiresUser, (res) ->
+  domo.route '!load :module', domo.requiresUser, (res) ->
     domo.load res.params.module, (err) ->
       return domo.say res.channel, err if err?
       domo.say res.channel, "Module '#{res.params.module}' loaded!"
 
-  domo.route '!stop :module', requiresUser, (res) ->
+  domo.route '!stop :module', domo.requiresUser, (res) ->
     domo.stop res.params.module, (err) ->
       domo.say res.channel, err if err?
       domo.say res.channel, "Module '#{res.params.module}' stopped!"
@@ -166,6 +159,9 @@ class Domo extends EventEmitter
 
     next()
 
-
+  requiresUser: (res, next) ->
+    unless res.user?
+      return @error "User #{res.prefix} tried to use '#{res.route}' route"
+    next()
 
 module.exports = Domo
