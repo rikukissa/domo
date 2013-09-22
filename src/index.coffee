@@ -83,7 +83,7 @@ class Domo extends EventEmitter
 
     @modules[mod] = module
     module.init?(@)
-    cb(null)
+    cb?(null)
 
   stop: (mod, cb) =>
     unless @modules.hasOwnProperty mod
