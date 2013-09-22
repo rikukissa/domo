@@ -70,6 +70,15 @@ It's now possible to use the new middleware like in the example above. It's also
 domo.use(reverseMessages);
 ````
 
+## Creating custom modules
+Domo allows you to write your own modules that can be loaded on runtime without having to restart your Domo instance.
+
+Modules can be loaded with the built-in __!load &lt;moduleName&gt;__  command.
+
+If you are looking for an example module, take a look at [domo-eval](https://github.com/rikukissa/domo-eval).
+
+The only requirement for the module is that it needs to return "init" method that is called when the module is loaded.
+
 ## Built in IRC Commands
 * !domo
   * Print Domo info
