@@ -9,7 +9,7 @@
 ## Get Domo-kun
 
 ```
-npm install
+npm install domo-kun
 ```
 ```
 var Domo, domo;
