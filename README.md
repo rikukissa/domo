@@ -95,7 +95,7 @@ The only requirement for the module is that it needs to return "init" method tha
   * Tell Dōmo-kun to join channel
 
 
-* !part [channels..]
+* !part &lt;channel&gt;
   * __Requires authentication__
   * Tell Dōmo-kun to leave channel
 
@@ -109,4 +109,4 @@ The only requirement for the module is that it needs to return "init" method tha
   * __Requires authentication__
   * Stop module and detach it from message events
 
-![alt text](http://1.bp.blogspot.com/-VJRt-hZit4I/TbjjDINykBI/AAAAAAAABts/E3L3GFL5_hs/s800/09299bd81d5c92fc1e5461d8e04b2e64.gif "Domo")
+![Domo](http://1.bp.blogspot.com/-VJRt-hZit4I/TbjjDINykBI/AAAAAAAABts/E3L3GFL5_hs/s800/09299bd81d5c92fc1e5461d8e04b2e64.gif "Domo")
