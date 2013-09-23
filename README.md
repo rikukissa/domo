@@ -92,12 +92,12 @@ The only requirement for the module is that it needs to return "init" method tha
 
 * !join &lt;channel&gt; &lt;password&gt;
   * __Requires authentication__
-  * Tell Dōmo-kun to join channel
+  * Tell Domo to join channel
 
 
 * !part &lt;channel&gt;
   * __Requires authentication__
-  * Tell Dōmo-kun to leave channel
+  * Tell Domo to leave channel
 
 
 * !load &lt;module&gt;
