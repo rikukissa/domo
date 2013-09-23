@@ -1,10 +1,12 @@
 # Domo
 [NPM Package](https://npmjs.org/package/domo-kun)
 
-[Usage example in JavaScript](https://github.com/rikukissa/domo-example)
+[Usage examples in JavaScript](https://github.com/rikukissa/domo-example)
 
-* Best irc-bot ever
-* Easy to configure
+IRC-bot that lets you easily write your own tasks for your own needs.
+
+![Domo](http://1.bp.blogspot.com/-VJRt-hZit4I/TbjjDINykBI/AAAAAAAABts/E3L3GFL5_hs/s800/09299bd81d5c92fc1e5461d8e04b2e64.gif "Domo")
+
 
 ## Get Domo-kun
 
@@ -92,12 +94,12 @@ The only requirement for the module is that it needs to return "init" method tha
 
 * !join &lt;channel&gt; &lt;password&gt;
   * __Requires authentication__
-  * Tell Domo to join channel
+  * Tell Dōmo-kun to join channel
 
 
 * !part &lt;channel&gt;
   * __Requires authentication__
-  * Tell Domo to leave channel
+  * Tell Dōmo-kun to leave channel
 
 
 * !load &lt;module&gt;
@@ -114,4 +116,3 @@ The only requirement for the module is that it needs to return "init" method tha
 ````
 mocha --compilers coffee:coffee-script --reporter nyan
 ````
-![Domo](http://1.bp.blogspot.com/-VJRt-hZit4I/TbjjDINykBI/AAAAAAAABts/E3L3GFL5_hs/s800/09299bd81d5c92fc1e5461d8e04b2e64.gif "Domo")
