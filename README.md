@@ -109,4 +109,9 @@ The only requirement for the module is that it needs to return "init" method tha
   * __Requires authentication__
   * Stop module and detach it from message events
 
+
+## Running tests
+````
+mocha --compilers coffee:coffee-script --reporter nyan
+````
 ![Domo](http://1.bp.blogspot.com/-VJRt-hZit4I/TbjjDINykBI/AAAAAAAABts/E3L3GFL5_hs/s800/09299bd81d5c92fc1e5461d8e04b2e64.gif "Domo")

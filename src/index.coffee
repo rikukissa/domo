@@ -44,7 +44,7 @@ class Domo extends EventEmitter
     @modules = {}
     @authedClients = []
     @middlewares = []
-
+    @config = @config || {}
     @use @constructRes
 
     registerDefaultRoutes @
