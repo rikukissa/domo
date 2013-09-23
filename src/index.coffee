@@ -51,8 +51,8 @@ class Domo extends EventEmitter
 
     @load module for module in @config.modules if @config.modules?
 
-  error: (msg) ->
-    console.log 'Error:'.red, msg.red if @config.debug?
+  error: (msgs...) ->
+    console.log 'Error:'.red, msgs.join('\n').red if @config.debug?
 
   notify: (msg) ->
     console.log 'Notify:'.green, msg.green
@@ -70,7 +70,11 @@ class Domo extends EventEmitter
     try
       module = require(mod)
     catch err
-      msg = "Module #{mod} not found"
+      msg = if err.code is 'MODULE_NOT_FOUND'
+        "Module #{mod} not found"
+      else
+        "Module #{mod} cannot be loaded"
+
       @error msg
       return cb?(msg)
 
