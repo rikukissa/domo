@@ -13,7 +13,7 @@ registerDefaultRoutes = (domo) ->
     domo.say res.channel, """
       h :) v#{pack.version}
       Current channels: #{(chan for chan of domo.channels).join(', ')}
-      I live here: #{pack.repository.url}
+      #{pack.repository.url}
       """
   domo.route '!auth :username :password', domo.authenticate, (res) ->
     domo.say res.channel, "You are now authed. Hi #{_.str.capitalize(res.user.username)}!"
