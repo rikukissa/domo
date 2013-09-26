@@ -1,0 +1,22 @@
+{
+  "name": "james-browserify-project-template",
+  "version": "0.0.0",
+  "homepage": "https://github.com/rikukissa/james-browserify-project-template",
+  "authors": [
+    "Riku Rouvila <riku.rouvila@gmail.com>"
+  ],
+  "description": "Webapp template project",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.0.3",
+    "rainbow": "~1.1.9"
+  }
+}

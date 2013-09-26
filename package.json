@@ -1,0 +1,26 @@
+{
+  "name": "james-browserify-project-template",
+  "version": "0.1.0",
+  "main": "./server/server",
+  "devDependencies": {
+    "browserify": "2.12.x",
+    "coffeeify": "0.4.x",
+    "james": ">=0.1.15",
+    "james-jade-static": "0.1.x",
+    "james-stylus": "0.1.x",
+    "james-uglify": "0.1.x",
+    "browserify-shim": "~2.0.3",
+    "james-reload": ">=0.2.0"
+  },
+  "dependencies": {
+    "coffee-script": "1.6.x",
+    "node-static": "0.6.x",
+    "bower": "~1.2.6",
+    "socket.io": "~0.9.16",
+    "domo-kun": "~0.1.3",
+    "socket.io-client": "~0.9.16"
+  },
+  "scripts": {
+    "start": "coffee server/server.coffee"
+  }
+}
