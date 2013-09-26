@@ -38,204 +38,229 @@ html
                 });
                 domo.connect();
         .section
-            h1.title.title-section.title-section-only Configuration
+          h1.title.title-section.title-section-only Configuration
+          .column.column1-2
+            pre
+              code(data-language='javascript').
+                var config = {
+                   nick: 'Domo',
+                   userName: 'Domo',
+                   realName: 'Domo the awesome IRC-bot',
+                   address: 'irc.freenode.net',
+                   channels: ['#domo'],
+                   users: [
+                     {
+                       username: 'riku',
+                       password: 'admin'
+                     }
+                   ],
+                   debug: true
+                };
+          .column.column1-2
+            ul.list
+              li.list-item
+                span.list-item-attribute nick
+                |Nickname of your bot
+              li.list-item
+                span.list-item-attribute userName
+                |Username of your bot
+              li.list-item
+                span.list-item-attribute realName
+                |Real name of your bot
+              li.list-item
+                span.list-item-attribute address
+                |Address of the IRC server you want your bot to connect to
+              li.list-item
+                span.list-item-attribute channels
+                |List of channels you want your bot to join after connecting to server
+                br
+                |( note that channel password can be used in the channel string '#domo pwd123' )
+              li.list-item
+                span.list-item-attribute users
+                | List of user-objects allowed to control your bot
+                br
+                |( note that some of the built-in IRC commands requires an authenticated user )
+              li.list-item
+                span.list-item-attribute debug
+                |enable/disable logging
+        .section
+          h1.title.title-section Routes
+          h3.title-method
+            |domo.route(path, callback);
+
+          .column.column1-1
+            .column.column1-2
+              p
+                | For routing Domo uses 
+                a(href='https://github.com/aaronblohowiak/routes.js', target='_blank') Routes.js
+                |  library.
+                | Received IRC messages are matched to defined paths and the callback functions are called.
+              p
+                span.text-bold domo.route
+                |  method allow you to define Sinatra style routes for received message strings.
+                |It's possible to define dynamic parameters, use regular expressions and much more.
+              p
+                |You'll find more about Domo's routing system from 
+                a(href='https://github.com/aaronblohowiak/routes.js', target='_blank') Routes.js documentation
+
             .column.column1-2
               pre
                 code(data-language='javascript').
-                  var config = {
-                     nick: 'Domo',
-                     userName: 'Domo',
-                     realName: 'Domo the awesome IRC-bot',
-                     address: 'irc.freenode.net',
-                     channels: ['#domo'],
-                     users: [
-                       {
-                         username: 'riku',
-                         password: 'admin'
-                       }
-                     ],
-                     debug: true
-                  };
+                  domo.route('Hello Domo!', function(res) {
+                    this.say(res.channel, 'Hi ' + res.nick + '!');
+                  });
+              pre
+                code(data-language='javascript').
+                  domo.route('Hello :name!', function(res) {
+                    if(res.params.name === 'Domo') {
+                      this.say(res.channel, 'Hi ' + res.nick + '!');
+                    }
+                  });
+        .section
+          h1.title.title-section.title-section-only Result object
+          .column.column1-1
+            .column.column1-2
+              pre
+                code(data-language='javascript').
+                  {
+                    params: {},
+                    splats: [],
+                    route: 'Hello Domo!',
+                    fn: [Function],
+                    prefix: 'riku!riku@example.com',
+                    nick: 'riku',
+                    user: null,
+                    host: 'example.com',
+                    command: 'PRIVMSG',
+                    rawCommand: 'PRIVMSG',
+                    commandType: 'normal',
+                    args: [ '#domo', 'hello domo!' ],
+                    channel: '#domo',
+                    message: 'hello domo!',
+                    username: 'riku'
+                  }
             .column.column1-2
               ul.list
                 li.list-item
-                  span.list-item-attribute nick
-                  |Nickname of your bot
+                  span.list-item-attribute params
+                  |Route parameters (see example above)
                 li.list-item
-                  span.list-item-attribute userName
-                  |Username of your bot
-                li.list-item
-                  span.list-item-attribute realName
-                  |Real name of your bot
-                li.list-item
-                  span.list-item-attribute address
-                  |Address of the IRC server you want your bot to connect to
-                li.list-item
-                  span.list-item-attribute channels
-                  |List of channels you want your bot to join after connecting to server
-                  br
-                  |( note that channel password can be used in the channel string '#domo pwd123' )
-                li.list-item
-                  span.list-item-attribute users
-                  | List of user-objects allowed to control your bot
-                  br
-                  |( note that some of the built-in IRC commands requires an authenticated user )
-                li.list-item
-                  span.list-item-attribute debug
-                  |enable/disable logging
-        .section
-            h1.title.title-section Routes
-            h3.title-method
-              |domo.route(path, callback);
-
-            .column.column1-1
-              .column.column1-2
-                p
-                  | For routing Domo uses 
-                  a(href='https://github.com/aaronblohowiak/routes.js', target='_blank') Routes.js
-                  |  library.
-                  | Received IRC messages are matched to defined paths and the callback functions are called.
-                p
-                  span.text-bold domo.route
-                  |  method allow you to define Sinatra style routes for received message strings.
-                  |It's possible to define dynamic parameters, use regular expressions and much more.
-                p
-                  |You'll find more about Domo's routing system from 
+                  span.list-item-attribute splats
+                  |Captured regular expression groups etc. (see 
                   a(href='https://github.com/aaronblohowiak/routes.js', target='_blank') Routes.js documentation
-
-              .column.column1-2
-                pre
-                  code(data-language='javascript').
-                    domo.route('Hello Domo!', function(res) {
-                      this.say(res.channel, 'Hi ' + res.nick + '!');
-                    });
-                pre
-                  code(data-language='javascript').
-                    domo.route('Hello :name!', function(res) {
-                      if(res.params.name === 'Domo') {
-                        this.say(res.channel, 'Hi ' + res.nick + '!');
-                      }
-                    });
+                  |)
+                li.list-item
+                  span.list-item-attribute route
+                  |Route-string that captured this message
+                li.list-item
+                  span.list-item-attribute fn
+                  |Route callback functions
+                li.list-item
+                  span.list-item-attribute prefix
+                  |IRC user information - self explanatory
+                li.list-item
+                  span.list-item-attribute nick
+                  |IRC user information - self explanatory
+                li.list-item
+                  span.list-item-attribute user
+                  |User object if user is authenticated. Otherwise null.
+                li.list-item
+                  span.list-item-attribute host
+                  |IRC user information - self explanatory
+                li.list-item
+                  span.list-item-attribute command
+                  |IRC protocol command
+                li.list-item
+                  span.list-item-attribute rawCommand
+                  |IRC protocol raw command
+                li.list-item
+                  span.list-item-attribute args
+                  |IRC protocol raw command arguments
+                li.list-item
+                  span.list-item-attribute channel
+                  |Channel where message was sent
+                li.list-item
+                  span.list-item-attribute message
+                  |Received message
+                li.list-item
+                  span.list-item-attribute username
+                  |IRC user information - self explanatory
         .section
-            h1.title.title-section.title-section-only Result object
+          h1.title.title-section Middlewares
+          h3.title-method
+            |domo.use(middleware);
+          .column.column1-1
             .column.column1-1
+              pre
+                code(data-language='javascript').
+                  // Responds only if the user who sends the message is authenticated
+                  domo.route('Hello Domo!', domo.requiresUser, function(res) {
+                    this.say(res.channel, 'Hi ' + res.nick + '!');
+                  });
+            .column.column1-1
+              p You can specify route specific middleware functions by adding them as arguments before the callback function.
+              p
+                |Currently the only built-in middleware is 
+                span.text-bold domo.requiresUser
+                |, that checks if the user who sends a message is authenticated.
+              p Creating custom middlewares is also possible.
+          .column.column1-1
+            .code-header Example custom middleware
+            .column.column1-1
+              pre
+                code(data-language='javascript').
+                  // Reverses received messages
+                  var reverseMessages = function(res, next) {
+                      res.message = res.message.split('').reverse().join('');
+                      next();
+                  };
+                  domo.route('Hello Domo!', reverseMessages, function(res) {
+                    this.say(res.channel, res.message); // !omoD olleH
+                  });
+            .column.column1-1
+              .column.column1-2
+                | It's also possible to use it automatically for all routes by registering it with
+                span.text-bold  domo.use
+                |  method.
               .column.column1-2
                 pre
                   code(data-language='javascript').
-                    {
-                      params: {},
-                      splats: [],
-                      route: 'Hello Domo!',
-                      fn: [Function],
-                      prefix: 'riku!riku@example.com',
-                      nick: 'riku',
-                      user: null,
-                      host: 'example.com',
-                      command: 'PRIVMSG',
-                      rawCommand: 'PRIVMSG',
-                      commandType: 'normal',
-                      args: [ '#domo', 'hello domo!' ],
-                      channel: '#domo',
-                      message: 'hello domo!',
-                      username: 'riku'
-                    }
-              .column.column1-2
-                ul.list
-                  li.list-item
-                    span.list-item-attribute params
-                    |Route parameters (see example above)
-                  li.list-item
-                    span.list-item-attribute splats
-                    |Captured regular expression groups etc. (see 
-                    a(href='https://github.com/aaronblohowiak/routes.js', target='_blank') Routes.js documentation
-                    |)
-                  li.list-item
-                    span.list-item-attribute route
-                    |Route-string that captured this message
-                  li.list-item
-                    span.list-item-attribute fn
-                    |Route callback functions
-                  li.list-item
-                    span.list-item-attribute prefix
-                    |IRC user information - self explanatory
-                  li.list-item
-                    span.list-item-attribute nick
-                    |IRC user information - self explanatory
-                  li.list-item
-                    span.list-item-attribute user
-                    |User object if user is authenticated. Otherwise null.
-                  li.list-item
-                    span.list-item-attribute host
-                    |IRC user information - self explanatory
-                  li.list-item
-                    span.list-item-attribute command
-                    |IRC protocol command
-                  li.list-item
-                    span.list-item-attribute rawCommand
-                    |IRC protocol raw command
-                  li.list-item
-                    span.list-item-attribute args
-                    |IRC protocol raw command arguments
-                  li.list-item
-                    span.list-item-attribute channel
-                    |Channel where message was sent
-                  li.list-item
-                    span.list-item-attribute message
-                    |Received message
-                  li.list-item
-                    span.list-item-attribute username
-                    |IRC user information - self explanatory
-        .section
-            h1.title.title-section Middlewares
-            h3.title-method
-              |domo.use(middleware);
-            .column.column1-1
-              .column.column1-1
-                pre
-                  code(data-language='javascript').
-                    // Responds only if the user who sends the message is authenticated
-                    domo.route('Hello Domo!', domo.requiresUser, function(res) {
-                      this.say(res.channel, 'Hi ' + res.nick + '!');
-                    });
-              .column.column1-1
-                p You can specify route specific middleware functions by adding them as arguments before the callback function.
-                p
-                  |Currently the only built-in middleware is 
-                  span.text-bold domo.requiresUser
-                  |, that checks if the user who sends a message is authenticated.
-                p Creating custom middlewares is also possible.
-            .column.column1-1
-              .code-header Example custom middleware
-              .column.column1-1
-                pre
-                  code(data-language='javascript').
-                    // Reverses received messages
-                    var reverseMessages = function(res, next) {
-                        res.message = res.message.split('').reverse().join('');
-                        next();
-                    };
-                    domo.route('Hello Domo!', reverseMessages, function(res) {
-                      this.say(res.channel, res.message); // !omoD olleH
-                    });
-              .column.column1-1
-                .column.column1-2
-                  | It's also possible to use it automatically for all routes by registering it with
-                  span.text-bold  domo.use
-                  |  method.
-                .column.column1-2
-                  pre
-                    code(data-language='javascript').
-                      domo.use(reverseMessages);
+                    domo.use(reverseMessages);
 
         .section
-            h1.title.title-section Modules
-            .column.column1-1
-              .column.column1-2
-                |Domo allows you to write your own modules that can be loaded on runtime without having to restart your Domo instance.
-                |Modules can be loaded with the built-in !load &lt;moduleName&gt; command.
-              .column.column1-2
-                |If you are looking for an example module, take a look at 
-                a(href='https://github.com/rikukissa/domo-eval', target='_blank') domo-eval
-                |. The only requirement for the module is that it needs to return
-                span.text-bold init
-                |  method that is called when the module is loaded.
+          h1.title.title-section Modules
+          .column.column1-1
+            .column.column1-2
+              |Domo allows you to write your own modules that can be loaded on runtime without having to restart your Domo instance.
+              |Modules can be loaded with the built-in !load &lt;moduleName&gt; command.
+            .column.column1-2
+              |If you are looking for an example module, take a look at 
+              a(href='https://github.com/rikukissa/domo-eval', target='_blank') domo-eval
+              |. The only requirement for the module is that it needs to return
+              span.text-bold init
+              |  method that is called when the module is loaded.
+        .section
+          h1.title.title-section.title-section-only Built-in IRC commands
+          ul.commands
+            li
+              .command !domo
+              span.command-description Print Domo info
+            li
+              .command !auth &lt;username&gt; &lt;password&gt;
+              span.command-description Authenticate (Probably better to do this with private message)
+            li
+              .command !join &lt;channel&gt; &lt;password&gt;
+              .command-requires-authentication Requires authentication
+              span.command-description Tell Domo to join channel
+            li
+              .command !part &lt;channel&gt;
+              .command-requires-authentication Requires authentication
+              span.command-description Tell Domo to leave channel
+            li
+              .command !load &lt;module&gt;
+              .command-requires-authentication Requires authentication
+              span.command-description Load domo modules from node_modules directory
+            li
+              .command !stop &lt;module&gt;
+              .command-requires-authentication Requires authentication
+              span.command-description Stop module and detach it from message events          
