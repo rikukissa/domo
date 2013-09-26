@@ -16,7 +16,14 @@ html, body
   font-weight 300
   color #333
 
-breakPoint1 = 1060px
+::selection
+  background #FF5E99
+  color #fff
+  text-shadow none
+
+
+a
+  color #551A8B
 
 .column
   padding 5px 0
@@ -56,8 +63,6 @@ p
   margin-bottom 15px
 
 pre
-  // margin 0 10px
-  // margin-bottom 20px
   border-radius 3px
   border 1px solid rgba(0, 0, 0, 0.35)
   background rgba(255, 255, 255, 0.8)
@@ -177,9 +182,19 @@ pre
   padding 10px
   overflow auto
   height 100%
+.irc-box-description
+  padding 10px 0
+  a
+    margin 0 10px
 .message-timestamp
   font-size 12px
 
 .message-body, .message-nick
   font-size 14px
   margin-left 10px
+
+.footer
+  padding 10px 0
+  font-size 13px
+  a
+    margin 0 20px

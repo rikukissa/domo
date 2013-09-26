@@ -254,6 +254,7 @@ html
                       this.say(res.channel, "It's " + time);
                     });
                   }
+
         .section
           h1.title.title-section.title-section-only Built-in IRC commands
           .column.column1-1
@@ -290,5 +291,11 @@ html
                     span.message-nick(data-bind='text: $data.nick')
                     |:
                     span.message-body(data-bind='text: $data.message')
-
+              .irc-box-description
+                |How does this work?
+                a(href='https://github.com/rikukissa/domo/blob/gh-pages/server/socket-server.coffee', target='_blank') Server
+                a(href='https://github.com/rikukissa/domo/blob/gh-pages/src/js/main.coffee', target='_blank') Client
+        .footer
+          a(href='https://github.com/rikukissa/domo/') GitHub
+          a(href='https://github.com/rikukissa/domo-example') Usage examples
     script(src='js/bundle.js')

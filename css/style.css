@@ -106,6 +106,14 @@ body {
   font-weight: 300;
   color: #333;
 }
+::selection {
+  background: #ff5e99;
+  color: #fff;
+  text-shadow: none;
+}
+a {
+  color: #551a8b;
+}
 .column {
   padding: 5px 0;
   float: left;
@@ -298,6 +306,12 @@ pre {
   overflow: auto;
   height: 100%;
 }
+.irc-box-description {
+  padding: 10px 0;
+}
+.irc-box-description a {
+  margin: 0 10px;
+}
 .message-timestamp {
   font-size: 12px;
 }
@@ -305,4 +319,11 @@ pre {
 .message-nick {
   font-size: 14px;
   margin-left: 10px;
+}
+.footer {
+  padding: 10px 0;
+  font-size: 13px;
+}
+.footer a {
+  margin: 0 20px;
 }
