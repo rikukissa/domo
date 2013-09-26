@@ -11,11 +11,22 @@ domo = new Domo
 
 domo.connect()
 
+messageCache = []
+
+io.sockets.on 'connection', (socket) ->
+  socket.emit 'messages', messageCache
+
 domo.route '*', (res) ->
-  io.sockets.emit 'message', res.message
+  return unless res.channel is '#domo-kun'
 
-io.sockets.on "connection", (socket) ->
-  socket.on 'message', (data) ->
-    for channel in domo.config.channels
-      domo.say channel, data
+  message =
+    channel: res.channel
+    message: res.message
+    timestamp: Date.now()  
 
+  io.sockets.emit 'message', message
+
+  if messageCache.length >= 100
+    messageCache.shift()
+
+  messageCache.push message
