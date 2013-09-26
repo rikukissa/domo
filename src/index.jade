@@ -1,8 +1,9 @@
 doctype 5
 html
   head
-    title James Browserify Project Template
+    title Domo-kun
     link(rel='stylesheet', href='css/style.css')
+    link(rel='shortcut icon', href='favicon.png')
     script(src='js/bundle.js')
   body
     a.fork-me(href='https://github.com/rikukissa/domo')
@@ -231,36 +232,56 @@ html
           h1.title.title-section Modules
           .column.column1-1
             .column.column1-2
-              |Domo allows you to write your own modules that can be loaded on runtime without having to restart your Domo instance.
-              |Modules can be loaded with the built-in !load &lt;moduleName&gt; command.
+              p
+                |Domo allows you to write your own modules that can be loaded on runtime without having to restart your Domo instance.
+                |Modules can be loaded with the built-in 
+                span.text-bold !load &lt;moduleName&gt; 
+                | command.
+              p
+                |If you are looking for an example module, take a look at 
+                a(href='https://github.com/rikukissa/domo-eval', target='_blank') domo-eval
+                |. 
+                br
+                |The only requirement for the module is that it needs to return 
+                span.text-bold init
+                |  method that is called when the module is loaded.
             .column.column1-2
-              |If you are looking for an example module, take a look at 
-              a(href='https://github.com/rikukissa/domo-eval', target='_blank') domo-eval
-              |. The only requirement for the module is that it needs to return
-              span.text-bold init
-              |  method that is called when the module is loaded.
+              pre
+                code(data-language='javascript').
+                  // domo-time
+                  module.exports.init = function(domo) {
+                    domo.route('What time is it Domo?', function(res) {
+                      var time = new Date().toLocaleTimeString();
+                      this.say(res.channel, "It's " + time);
+                    });
+                  }
         .section
           h1.title.title-section.title-section-only Built-in IRC commands
-          ul.commands
-            li
-              .command !domo
-              span.command-description Print Domo info
-            li
-              .command !auth &lt;username&gt; &lt;password&gt;
-              span.command-description Authenticate (Probably better to do this with private message)
-            li
-              .command !join &lt;channel&gt; &lt;password&gt;
-              .command-requires-authentication Requires authentication
-              span.command-description Tell Domo to join channel
-            li
-              .command !part &lt;channel&gt;
-              .command-requires-authentication Requires authentication
-              span.command-description Tell Domo to leave channel
-            li
-              .command !load &lt;module&gt;
-              .command-requires-authentication Requires authentication
-              span.command-description Load domo modules from node_modules directory
-            li
-              .command !stop &lt;module&gt;
-              .command-requires-authentication Requires authentication
-              span.command-description Stop module and detach it from message events          
+          .column.column1-1
+            .column.column1-2          
+              ul.commands
+                li
+                  .command !domo
+                  span.command-description Print Domo info
+                li
+                  .command !auth &lt;username&gt; &lt;password&gt;
+                  span.command-description Authenticate (Probably better to do this with private message)
+                li
+                  .command !join &lt;channel&gt; &lt;password&gt;
+                  .command-requires-authentication Requires authentication
+                  span.command-description Tell Domo to join channel
+                li
+                  .command !part &lt;channel&gt;
+                  .command-requires-authentication Requires authentication
+                  span.command-description Tell Domo to leave channel
+                li
+                  .command !load &lt;module&gt;
+                  .command-requires-authentication Requires authentication
+                  span.command-description Load domo modules from node_modules directory
+                li
+                  .command !stop &lt;module&gt;
+                  .command-requires-authentication Requires authentication
+                  span.command-description Stop module and detach it from message events    
+            .column.column1-2
+              .irc-box
+                .irc-box-header #domo-kun @irc.freenode.org
