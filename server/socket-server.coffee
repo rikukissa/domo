@@ -1,6 +1,6 @@
 Domo = require 'domo-kun'
 
-io   = require("socket.io").listen 62899
+io   = require("socket.io").listen 61973
 
 domo = new Domo
   nick: 'Domo'
