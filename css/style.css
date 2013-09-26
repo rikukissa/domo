@@ -280,9 +280,29 @@ pre {
   -ms-border-radius: 3px;
   -o-border-radius: 3px;
   border-radius: 3px;
+  font-family: Consolas, 'Liberation Mono', Courier, monospace;
+  position: relative;
+  padding-top: 45px;
 }
 .irc-box-header {
   padding: 10px;
   font-size: 14px;
   border-bottom: 1px solid #ccc;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  left: 0;
+}
+.irc-box-messages {
+  padding: 10px;
+  overflow: auto;
+  height: 100%;
+}
+.message-timestamp {
+  font-size: 12px;
+}
+.message-body,
+.message-nick {
+  font-size: 14px;
+  margin-left: 10px;
 }

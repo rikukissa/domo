@@ -4,7 +4,6 @@ html
     title Domo-kun
     link(rel='stylesheet', href='css/style.css')
     link(rel='shortcut icon', href='favicon.png')
-    script(src='js/bundle.js')
   body
     a.fork-me(href='https://github.com/rikukissa/domo')
       img(src='https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png', alt='Fork me on GitHub')
@@ -284,4 +283,12 @@ html
                   span.command-description Stop module and detach it from message events    
             .column.column1-2
               .irc-box
-                .irc-box-header #domo-kun @irc.freenode.org
+                .irc-box-header #domo-kun @ irc.freenode.org
+                .irc-box-messages#message-box(data-bind='foreach: $root.messages')
+                  .message
+                    span.message-timestamp(data-bind='text: $root.formatTime($data.timestamp)')
+                    span.message-nick(data-bind='text: $data.nick')
+                    |:
+                    span.message-body(data-bind='text: $data.message')
+
+    script(src='js/bundle.js')
