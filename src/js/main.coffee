@@ -14,18 +14,18 @@ class ViewModel
   constructor: ->
     @messages = ko.observableArray()
     
-    @messages.subscribe ->
-      setTimeout ->
-        el = document.getElementById 'message-box'
-        el.scrollTop = el.scrollHeight
-      , 0 # Fix me!
-
     socket.on 'messages', (messages) =>
       @messages messages
-
+      @scrollBottom()
+    
     socket.on 'message', (message) =>
       @messages.push message
+      @scrollBottom()
   
+  scrollBottom: ->
+    el = document.getElementById 'message-box'
+    el.scrollTop = el.scrollHeight
+
   formatTime: (time) ->
     return new Date(time).toLocaleTimeString()
 
