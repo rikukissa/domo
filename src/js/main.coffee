@@ -1,4 +1,3 @@
-$       = require 'jquery'
 Rainbow = require 'rainbow'
 
 require 'rainbow-js'
