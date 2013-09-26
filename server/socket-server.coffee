@@ -20,6 +20,7 @@ domo.route '*', (res) ->
   return unless res.channel is '#domo-kun'
 
   message =
+    nick: res.nick
     channel: res.channel
     message: res.message
     timestamp: Date.now()  
