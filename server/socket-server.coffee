@@ -5,7 +5,7 @@ io   = require("socket.io").listen 61973
 domo = new Domo
   nick: 'Domo'
   userName: 'Domo'
-  address: 'irc.freenode.net'
+  address: 'irc.freenode.org'
   channels: ['#domo-kun']
   debug: true
 
@@ -23,7 +23,7 @@ domo.route '*', (res) ->
     nick: res.nick
     channel: res.channel
     message: res.message
-    timestamp: Date.now()  
+    timestamp: Date.now()
 
   io.sockets.emit 'message', message
 
