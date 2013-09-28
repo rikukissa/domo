@@ -95,6 +95,7 @@ class Domo extends EventEmitter
       @error msg
       return cb?(msg)
 
+    @modules[mod].destruct?()
     delete require.cache[require.resolve(mod)]
     delete @modules[mod]
 
@@ -103,6 +104,7 @@ class Domo extends EventEmitter
     return cb?(null)
 
   connect: ->
+    @notify "Connecting to server #{@config.address}."
     @client = new irc.Client @config.address, @config.nick, @config
 
     @client.addListener 'error', (msg) =>

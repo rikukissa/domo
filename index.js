@@ -135,11 +135,14 @@ Domo = (function(_super) {
   };
 
   Domo.prototype.stop = function(mod, cb) {
-    var msg;
+    var msg, _base;
     if (!this.modules.hasOwnProperty(mod)) {
       msg = "Module " + mod + " not loaded";
       this.error(msg);
       return typeof cb === "function" ? cb(msg) : void 0;
+    }
+    if (typeof (_base = this.modules[mod]).destruct === "function") {
+      _base.destruct();
     }
     delete require.cache[require.resolve(mod)];
     delete this.modules[mod];
@@ -149,6 +152,7 @@ Domo = (function(_super) {
 
   Domo.prototype.connect = function() {
     var _this = this;
+    this.notify("Connecting to server " + this.config.address + ".");
     this.client = new irc.Client(this.config.address, this.config.nick, this.config);
     this.client.addListener('error', function(msg) {
       _this.error(msg);
