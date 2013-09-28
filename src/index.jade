@@ -46,7 +46,7 @@ html
                    nick: 'Domo',
                    userName: 'Domo',
                    realName: 'Domo the awesome IRC-bot',
-                   address: 'irc.freenode.net',
+                   address: 'irc.freenode.org',
                    channels: ['#domo'],
                    users: [
                      {
@@ -91,7 +91,7 @@ html
           .column.column1-1
             .column.column1-2
               p
-                | For routing Domo uses 
+                | For routing Domo uses
                 a(href='https://github.com/aaronblohowiak/routes.js', target='_blank') Routes.js
                 |  library.
                 | Received IRC messages are matched to defined paths and the callback functions are called.
@@ -100,7 +100,7 @@ html
                 |  method allow you to define Sinatra style routes for received message strings.
                 |It's possible to define dynamic parameters, use regular expressions and much more.
               p
-                |You'll find more about Domo's routing system from 
+                |You'll find more about Domo's routing system from
                 a(href='https://github.com/aaronblohowiak/routes.js', target='_blank') Routes.js documentation
 
             .column.column1-2
@@ -146,7 +146,7 @@ html
                   |Route parameters (see example above)
                 li.list-item
                   span.list-item-attribute splats
-                  |Captured regular expression groups etc. (see 
+                  |Captured regular expression groups etc. (see
                   a(href='https://github.com/aaronblohowiak/routes.js', target='_blank') Routes.js documentation
                   |)
                 li.list-item
@@ -200,7 +200,7 @@ html
             .column.column1-1
               p You can specify route specific middleware functions by adding them as arguments before the callback function.
               p
-                |Currently the only built-in middleware is 
+                |Currently the only built-in middleware is
                 span.text-bold domo.requiresUser
                 |, that checks if the user who sends a message is authenticated.
               p Creating custom middlewares is also possible.
@@ -233,15 +233,15 @@ html
             .column.column1-2
               p
                 |Domo allows you to write your own modules that can be loaded on runtime without having to restart your Domo instance.
-                |Modules can be loaded with the built-in 
-                span.text-bold !load &lt;moduleName&gt; 
+                |Modules can be loaded with the built-in
+                span.text-bold !load &lt;moduleName&gt;
                 | command.
               p
-                |If you are looking for an example module, take a look at 
+                |If you are looking for an example module, take a look at
                 a(href='https://github.com/rikukissa/domo-eval', target='_blank') domo-eval
-                |. 
+                |.
                 br
-                |The only requirement for the module is that it needs to return 
+                |The only requirement for the module is that it needs to return
                 span.text-bold init
                 |  method that is called when the module is loaded.
             .column.column1-2
@@ -258,7 +258,7 @@ html
         .section
           h1.title.title-section.title-section-only Built-in IRC commands
           .column.column1-1
-            .column.column1-2          
+            .column.column1-2
               ul.commands
                 li
                   .command !domo
@@ -281,7 +281,7 @@ html
                 li
                   .command !stop &lt;module&gt;
                   .command-requires-authentication Requires authentication
-                  span.command-description Stop module and detach it from message events    
+                  span.command-description Stop module and detach it from message events
             .column.column1-2
               .irc-box
                 .irc-box-header #domo-kun @ irc.freenode.org
