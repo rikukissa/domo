@@ -100,15 +100,31 @@ Domo = (function(_super) {
   };
 
   Domo.prototype.say = function(channel, msg) {
-    return this.client.say(channel, msg);
+    return this.irc.say(channel, msg);
+  };
+
+  Domo.prototype.privmsg = function() {
+    var receivers, text, _i;
+    receivers = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), text = arguments[_i++];
+    return this.irc.send("PRIVMSG " + (receivers.join(',')) + " :" + text);
   };
 
   Domo.prototype.join = function(channel, cb) {
-    return this.client.join(channel, cb);
+    var _this = this;
+    return this.irc.join(channel, function() {
+      if (cb != null) {
+        return cb.apply(_this, arguments);
+      }
+    });
   };
 
   Domo.prototype.part = function(channel, cb) {
-    return this.client.part(channel, cb);
+    var _this = this;
+    return this.irc.part(channel, function() {
+      if (cb != null) {
+        return cb.apply(_this, arguments);
+      }
+    });
   };
 
   Domo.prototype.load = function(mod, cb) {
@@ -127,6 +143,9 @@ Domo = (function(_super) {
       return typeof cb === "function" ? cb(msg) : void 0;
     }
     this.notify("Loaded module " + mod);
+    if (typeof Module === 'function') {
+      module = new Module(this);
+    }
     this.modules[mod] = module;
     if (typeof module.init === "function") {
       module.init(this);
@@ -153,27 +172,32 @@ Domo = (function(_super) {
   Domo.prototype.connect = function() {
     var _this = this;
     this.notify("Connecting to server " + this.config.address + ".");
-    this.client = new irc.Client(this.config.address, this.config.nick, this.config);
-    this.client.addListener('error', function(msg) {
+    this.irc = new irc.Client(this.config.address, this.config.nick, this.config);
+    this.irc.addListener('error', function(msg) {
       _this.error(msg);
       return _this.emit.apply(_this, arguments);
     });
-    this.client.addListener('registered', function() {
+    this.irc.addListener('registered', function() {
       _this.notify("Connected to server " + _this.config.address + ".\n\tChannels joined: " + (_this.config.channels.join(', ')));
       return _this.emit.apply(_this, arguments);
     });
-    this.client.addListener('message', function(nick, channel, msg, res) {
+    this.irc.addListener('message', function(nick, channel, msg, res) {
       _this.emit.apply(_this, arguments);
       return _this.match(msg, res);
     });
-    this.channels = this.client.chans;
-    return this.client;
+    this.channels = this.irc.chans;
+    return this.irc;
   };
 
   Domo.prototype.route = function() {
     var fn, middlewares, path, _i;
     path = arguments[0], middlewares = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), fn = arguments[_i++];
     return this.router.addRoute(path, this.wrap(fn, middlewares));
+  };
+
+  Domo.prototype.on = function() {
+    var cmd, fn, middlewares, _i;
+    cmd = arguments[0], middlewares = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), fn = arguments[_i++];
   };
 
   Domo.prototype.match = function(path, data) {

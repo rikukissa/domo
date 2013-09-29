@@ -58,14 +58,17 @@ class Domo extends EventEmitter
     console.log 'Notify:'.green, msg.green
 
   say: (channel, msg) =>
-    @client.say channel, msg
+    @irc.say channel, msg
+
+  privmsg: (receivers..., text) ->
+    @irc.send "PRIVMSG #{receivers.join ','} :#{text}"
 
   join: (channel, cb) ->
-    @client.join channel, =>
+    @irc.join channel, =>
       cb.apply this, arguments if cb?
 
   part: (channel, cb) ->
-    @client.part channel, =>
+    @irc.part channel, =>
       cb.apply this, arguments if cb?
 
   load: (mod, cb) =>
@@ -111,27 +114,30 @@ class Domo extends EventEmitter
 
   connect: ->
     @notify "Connecting to server #{@config.address}."
-    @client = new irc.Client @config.address, @config.nick, @config
+    @irc = new irc.Client @config.address, @config.nick, @config
 
-    @client.addListener 'error', (msg) =>
+    @irc.addListener 'error', (msg) =>
       @error msg
       @emit.apply this, arguments
 
-    @client.addListener 'registered', =>
+    @irc.addListener 'registered', =>
       @notify "Connected to server #{@config.address}.\n\tChannels joined: #{@config.channels.join(', ')}"
       @emit.apply this, arguments
 
-    @client.addListener 'message', (nick, channel, msg, res) =>
+    @irc.addListener 'message', (nick, channel, msg, res) =>
       @emit.apply this, arguments
       @match msg, res
 
-    @channels = @client.chans
+    @channels = @irc.chans
 
-    return @client
+    return @irc
 
 
   route: (path, middlewares..., fn) ->
     @router.addRoute path, @wrap(fn, middlewares)
+
+  on: (cmd, middlewares..., fn) ->
+    # TODO: Add handling system here.
 
   match: (path, data) ->
     return unless (result = @router.match path)?
