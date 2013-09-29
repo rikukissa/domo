@@ -61,10 +61,12 @@ class Domo extends EventEmitter
     @client.say channel, msg
 
   join: (channel, cb) ->
-    @client.join channel, cb
+    @client.join channel, =>
+      cb.apply this, arguments if cb?
 
   part: (channel, cb) ->
-    @client.part channel, cb
+    @client.part channel, =>
+      cb.apply this, arguments if cb?
 
   load: (mod, cb) =>
     try
@@ -85,8 +87,12 @@ class Domo extends EventEmitter
 
     @notify "Loaded module #{mod}"
 
+    module = new Module(@) if typeof Module is 'function'
+
     @modules[mod] = module
+
     module.init?(@)
+
     cb?(null)
 
   stop: (mod, cb) =>
