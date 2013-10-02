@@ -173,6 +173,7 @@ Domo = (function(_super) {
     var _this = this;
     this.notify("Connecting to server " + this.config.address + ".");
     this.irc = new irc.Client(this.config.address, this.config.nick, this.config);
+    this.channels = this.irc.chans;
     this.on('error', function(msg) {
       return _this.error(msg);
     });

@@ -114,7 +114,10 @@ class Domo extends EventEmitter
 
   connect: ->
     @notify "Connecting to server #{@config.address}."
+
     @irc = new irc.Client @config.address, @config.nick, @config
+
+    @channels = @irc.chans
 
     @on 'error', (msg) =>
       @error msg
