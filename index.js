@@ -196,8 +196,10 @@ Domo = (function(_super) {
   };
 
   Domo.prototype.on = function() {
-    var cmd, fn, middlewares, _i;
-    cmd = arguments[0], middlewares = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), fn = arguments[_i++];
+    var event, fn, middlewares, _i;
+    event = arguments[0], middlewares = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), fn = arguments[_i++];
+    this.irc.addListener(event, this.wrap(fn, middlewares, false));
+    return Domo.__super__.on.apply(this, arguments);
   };
 
   Domo.prototype.match = function(path, data) {
@@ -208,12 +210,16 @@ Domo = (function(_super) {
     return result.fn.call(this, _.extend(result, data));
   };
 
-  Domo.prototype.wrap = function(fn, middlewares) {
+  Domo.prototype.wrap = function(fn, middlewares, useRegisted) {
     var _this = this;
+    if (useRegisted == null) {
+      useRegisted = true;
+    }
     return function() {
-      var args;
+      var args, combinedMiddlewares;
       args = Array.prototype.slice.call(arguments, 0);
-      return _.reduceRight(_this.middlewares.concat(middlewares), function(memo, item) {
+      combinedMiddlewares = useRegisted ? _this.middlewares.concat(middlewares) : middlewares;
+      return _.reduceRight(combinedMiddlewares, function(memo, item) {
         var next;
         next = function() {
           return memo.apply(_this, args);

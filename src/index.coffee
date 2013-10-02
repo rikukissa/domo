@@ -136,16 +136,24 @@ class Domo extends EventEmitter
   route: (path, middlewares..., fn) ->
     @router.addRoute path, @wrap(fn, middlewares)
 
-  on: (cmd, middlewares..., fn) ->
-    # TODO: Add handling system here.
+  on: (event, middlewares..., fn) ->
+    @irc.addListener event, @wrap(fn, middlewares, false)
+    super
 
   match: (path, data) ->
     return unless (result = @router.match path)?
     result.fn.call this, _.extend result, data
 
-  wrap: (fn, middlewares) -> () =>
+  wrap: (fn, middlewares, useRegisted = true) -> () =>
     args = Array.prototype.slice.call(arguments, 0)
-    _.reduceRight(@middlewares.concat(middlewares), (memo, item) =>
+
+    combinedMiddlewares =
+      if useRegisted
+        @middlewares.concat(middlewares)
+      else
+        middlewares
+
+    _.reduceRight(combinedMiddlewares, (memo, item) =>
       next = => memo.apply this, args
       return -> item.apply this, _.flatten([args, next], true)
     , fn).apply this, arguments
