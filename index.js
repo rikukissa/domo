@@ -173,16 +173,13 @@ Domo = (function(_super) {
     var _this = this;
     this.notify("Connecting to server " + this.config.address + ".");
     this.irc = new irc.Client(this.config.address, this.config.nick, this.config);
-    this.irc.addListener('error', function(msg) {
-      _this.error(msg);
-      return _this.emit.apply(_this, arguments);
+    this.on('error', function(msg) {
+      return _this.error(msg);
     });
-    this.irc.addListener('registered', function() {
-      _this.notify("Connected to server " + _this.config.address + ".\n\tChannels joined: " + (_this.config.channels.join(', ')));
-      return _this.emit.apply(_this, arguments);
+    this.on('registered', function() {
+      return _this.notify("Connected to server " + _this.config.address + ".\n\tChannels joined: " + (_this.config.channels.join(', ')));
     });
-    this.irc.addListener('message', function(nick, channel, msg, res) {
-      _this.emit.apply(_this, arguments);
+    this.on('message', function(nick, channel, msg, res) {
       return _this.match(msg, res);
     });
     this.channels = this.irc.chans;
