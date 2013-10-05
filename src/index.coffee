@@ -116,7 +116,7 @@ class Domo extends EventEmitter
 
     @on 'error', @error
 
-    @on 'registered', =>
+    @on 'registered', ->
       @info "Connected to server #{@config.address}.\n\tChannels joined: #{@config.channels.join(', ')}"
 
     @on 'message', (nick, channel, msg, res) =>

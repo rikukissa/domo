@@ -203,7 +203,7 @@ Domo = (function(_super) {
     this.channels = this.irc.chans;
     this.on('error', this.error);
     this.on('registered', function() {
-      return _this.info("Connected to server " + _this.config.address + ".\n\tChannels joined: " + (_this.config.channels.join(', ')));
+      return this.info("Connected to server " + this.config.address + ".\n\tChannels joined: " + (this.config.channels.join(', ')));
     });
     this.on('message', function(nick, channel, msg, res) {
       return _this.match(msg, res);
