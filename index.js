@@ -86,24 +86,49 @@ Domo = (function(_super) {
     }
   }
 
+  Domo.prototype.info = function() {
+    var msg;
+    return console.info.apply(console, ['Info:'.green].concat(__slice.call((function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+        msg = arguments[_i];
+        _results.push(msg.green);
+      }
+      return _results;
+    }).apply(this, arguments))));
+  };
+
+  Domo.prototype.warn = function() {
+    var msg;
+    return console.warn.apply(console, ['Warn:'.yellow].concat(__slice.call((function() {
+      var _i, _len, _results;
+      _results = [];
+      for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+        msg = arguments[_i];
+        _results.push(msg.yellow);
+      }
+      return _results;
+    }).apply(this, arguments))));
+  };
+
   Domo.prototype.error = function() {
-    var msgs;
-    msgs = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    if (this.config.debug != null) {
-      return console.log('Error:'.red, msgs.join('\n').red);
+    var msg;
+    if (this.config.debug) {
+      return console.error.apply(console, ['Error:'.red].concat(__slice.call((function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+          msg = arguments[_i];
+          _results.push(msg.red);
+        }
+        return _results;
+      }).apply(this, arguments))));
     }
   };
 
-  Domo.prototype.notify = function(msg) {
-    return console.log('Notify:'.green, msg.green);
-  };
-
-  Domo.prototype.say = Domo.irc.say;
-
-  Domo.prototype.privmsg = function() {
-    var receivers, text, _i;
-    receivers = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), text = arguments[_i++];
-    return this.irc.send("PRIVMSG " + (receivers.join(',')) + " :" + text);
+  Domo.prototype.say = function() {
+    return this.irc.say(arguments);
   };
 
   Domo.prototype.join = function(channel, cb) {
@@ -139,7 +164,7 @@ Domo = (function(_super) {
       this.error(msg);
       return typeof cb === "function" ? cb(msg) : void 0;
     }
-    this.notify("Loaded module " + mod);
+    this.info("Loaded module " + mod);
     if (typeof Module === 'function') {
       module = new Module(this);
     }
@@ -162,18 +187,18 @@ Domo = (function(_super) {
     }
     delete require.cache[require.resolve(mod)];
     delete this.modules[mod];
-    this.notify("Stopped module " + mod);
+    this.info("Stopped module " + mod);
     return typeof cb === "function" ? cb(null) : void 0;
   };
 
   Domo.prototype.connect = function() {
     var _this = this;
-    this.notify("Connecting to server " + this.config.address + ".");
+    this.info("Connecting to server " + this.config.address + ".");
     this.irc = new irc.Client(this.config.address, this.config.nick, this.config);
     this.channels = this.irc.chans;
     this.on('error', this.error);
     this.on('registered', function() {
-      return _this.notify("Connected to server " + _this.config.address + ".\n\tChannels joined: " + (_this.config.channels.join(', ')));
+      return _this.info("Connected to server " + _this.config.address + ".\n\tChannels joined: " + (_this.config.channels.join(', ')));
     });
     this.on('message', function(nick, channel, msg, res) {
       return _this.match(msg, res);
@@ -223,7 +248,9 @@ Domo = (function(_super) {
     };
   };
 
-  Domo.prototype.use = Domo.middlewares.push;
+  Domo.prototype.use = function() {
+    return this.middlewares.push(arguments);
+  };
 
   Domo.prototype.constructRes = function(res, next) {
     res.channel = res.args[0];

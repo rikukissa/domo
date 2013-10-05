@@ -51,24 +51,19 @@ class Domo extends EventEmitter
 
     @load module for module in @config.modules if @config.modules?
 
-  error: (msgs...) ->
-    console.log 'Error:'.red, msgs.join('\n').red if @config.debug?
+  info: -> console.info 'Info:'.green, (msg.green for msg in arguments)...
+  warn: -> console.warn 'Warn:'.yellow, (msg.yellow for msg in arguments)...
+  error: -> console.error 'Error:'.red, (msg.red for msg in arguments)... if @config.debug
 
-  notify: (msg) ->
-    console.log 'Notify:'.green, msg.green
-
-  say: @irc.say
-
-  privmsg: (receivers..., text) ->
-    @irc.send "PRIVMSG #{receivers.join ','} :#{text}"
+  say: -> @irc.say arguments
 
   join: (channel, cb) ->
     @irc.join channel, =>
-      cb.apply this, arguments if cb?
+      cb.apply @, arguments if cb?
 
   part: (channel, cb) ->
     @irc.part channel, =>
-      cb.apply this, arguments if cb?
+      cb.apply @, arguments if cb?
 
   load: (mod, cb) =>
     try
@@ -87,7 +82,7 @@ class Domo extends EventEmitter
       @error msg
       return cb?(msg)
 
-    @notify "Loaded module #{mod}"
+    @info "Loaded module #{mod}"
 
     module = new Module(@) if typeof Module is 'function'
 
@@ -107,12 +102,12 @@ class Domo extends EventEmitter
     delete require.cache[require.resolve(mod)]
     delete @modules[mod]
 
-    @notify "Stopped module #{mod}"
+    @info "Stopped module #{mod}"
 
     return cb?(null)
 
   connect: ->
-    @notify "Connecting to server #{@config.address}."
+    @info "Connecting to server #{@config.address}."
 
     @irc = new irc.Client @config.address, @config.nick, @config
 
@@ -121,7 +116,7 @@ class Domo extends EventEmitter
     @on 'error', @error
 
     @on 'registered', =>
-      @notify "Connected to server #{@config.address}.\n\tChannels joined: #{@config.channels.join(', ')}"
+      @info "Connected to server #{@config.address}.\n\tChannels joined: #{@config.channels.join(', ')}"
 
     @on 'message', (nick, channel, msg, res) =>
       @match msg, res
@@ -138,7 +133,7 @@ class Domo extends EventEmitter
 
   match: (path, data) ->
     return unless (result = @router.match path)?
-    result.fn.call this, _.extend result, data
+    result.fn.call @, _.extend result, data
 
   wrap: (fn, middlewares, useRegisted = true) -> () =>
     args = Array.prototype.slice.call(arguments, 0)
@@ -150,11 +145,11 @@ class Domo extends EventEmitter
         middlewares
 
     _.reduceRight(combinedMiddlewares, (memo, item) =>
-      next = => memo.apply this, args
-      return -> item.apply this, _.flatten([args, next], true)
-    , fn).apply this, arguments
+      next = => memo.apply @, args
+      return -> item.apply @, _.flatten([args, next], true)
+    , fn).apply @, arguments
 
-  use: @middlewares.push
+  use: -> @middlewares.push arguments
 
   constructRes: (res, next) ->
     res.channel = res.args[0]
