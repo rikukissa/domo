@@ -70,7 +70,6 @@ Domo = (function(_super) {
     this.config = config;
     this.stop = __bind(this.stop, this);
     this.load = __bind(this.load, this);
-    this.say = __bind(this.say, this);
     this.router = new Router;
     this.modules = {};
     this.authedClients = [];
@@ -99,9 +98,7 @@ Domo = (function(_super) {
     return console.log('Notify:'.green, msg.green);
   };
 
-  Domo.prototype.say = function(channel, msg) {
-    return this.irc.say(channel, msg);
-  };
+  Domo.prototype.say = Domo.irc.say;
 
   Domo.prototype.privmsg = function() {
     var receivers, text, _i;
@@ -174,16 +171,13 @@ Domo = (function(_super) {
     this.notify("Connecting to server " + this.config.address + ".");
     this.irc = new irc.Client(this.config.address, this.config.nick, this.config);
     this.channels = this.irc.chans;
-    this.on('error', function(msg) {
-      return _this.error(msg);
-    });
+    this.on('error', this.error);
     this.on('registered', function() {
       return _this.notify("Connected to server " + _this.config.address + ".\n\tChannels joined: " + (_this.config.channels.join(', ')));
     });
     this.on('message', function(nick, channel, msg, res) {
       return _this.match(msg, res);
     });
-    this.channels = this.irc.chans;
     return this.irc;
   };
 
@@ -229,9 +223,7 @@ Domo = (function(_super) {
     };
   };
 
-  Domo.prototype.use = function(mw) {
-    return this.middlewares.push(mw);
-  };
+  Domo.prototype.use = Domo.middlewares.push;
 
   Domo.prototype.constructRes = function(res, next) {
     res.channel = res.args[0];
