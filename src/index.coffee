@@ -57,8 +57,7 @@ class Domo extends EventEmitter
   notify: (msg) ->
     console.log 'Notify:'.green, msg.green
 
-  say: (channel, msg) =>
-    @irc.say channel, msg
+  say: @irc.say
 
   privmsg: (receivers..., text) ->
     @irc.send "PRIVMSG #{receivers.join ','} :#{text}"
@@ -119,16 +118,13 @@ class Domo extends EventEmitter
 
     @channels = @irc.chans
 
-    @on 'error', (msg) =>
-      @error msg
+    @on 'error', @error
 
     @on 'registered', =>
       @notify "Connected to server #{@config.address}.\n\tChannels joined: #{@config.channels.join(', ')}"
 
     @on 'message', (nick, channel, msg, res) =>
       @match msg, res
-
-    @channels = @irc.chans
 
     return @irc
 
@@ -158,8 +154,7 @@ class Domo extends EventEmitter
       return -> item.apply this, _.flatten([args, next], true)
     , fn).apply this, arguments
 
-  use: (mw) ->
-    @middlewares.push mw
+  use: @middlewares.push
 
   constructRes: (res, next) ->
     res.channel = res.args[0]
