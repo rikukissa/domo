@@ -86,6 +86,10 @@ Domo = (function(_super) {
     }
   }
 
+  Domo.prototype.log = function() {
+    return console.log(arguments);
+  };
+
   Domo.prototype.info = function() {
     var msg;
     return console.info.apply(console, ['Info:'.green].concat(__slice.call((function() {
