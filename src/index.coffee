@@ -44,17 +44,17 @@ class Domo extends EventEmitter
     @modules = {}
     @authedClients = []
     @middlewares = []
-    @config = @config || {}
+    @config = @config or {}
     @use @constructRes
 
     registerDefaultRoutes @
 
-    @load module for module in @config.modules if @config.modules?
+    @load module for module of @config.modules if @config.modules?
 
   log: -> console.log arguments...
-  info: -> console.info 'Info:'.green, (msg.green for msg in arguments)...
-  warn: -> console.warn 'Warn:'.yellow, (msg.yellow for msg in arguments)...
-  error: -> console.error 'Error:'.red, (msg.red for msg in arguments)... if @config.debug
+  info: -> console.info 'Info:'.green, (msg.green for msg of arguments)...
+  warn: -> console.warn 'Warn:'.yellow, (msg.yellow for msg of arguments)...
+  error: -> console.error 'Error:'.red, (msg.red for msg of arguments)... if @config.debug
 
   say: -> @irc.say arguments...
 
