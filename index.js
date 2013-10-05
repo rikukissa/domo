@@ -66,7 +66,7 @@ Domo = (function(_super) {
   __extends(Domo, _super);
 
   function Domo(config) {
-    var module;
+    var module, _i, _len, _ref;
     this.config = config;
     this.stop = __bind(this.stop, this);
     this.load = __bind(this.load, this);
@@ -78,7 +78,9 @@ Domo = (function(_super) {
     this.use(this.constructRes);
     registerDefaultRoutes(this);
     if (this.config.modules != null) {
-      for (module in this.config.modules) {
+      _ref = this.config.modules;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        module = _ref[_i];
         this.load(module);
       }
     }
@@ -91,9 +93,10 @@ Domo = (function(_super) {
   Domo.prototype.info = function() {
     var msg;
     return console.info.apply(console, ['Info:'.green].concat(__slice.call((function() {
-      var _results;
+      var _i, _len, _results;
       _results = [];
-      for (msg in arguments) {
+      for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+        msg = arguments[_i];
         _results.push(msg.green);
       }
       return _results;
@@ -103,9 +106,10 @@ Domo = (function(_super) {
   Domo.prototype.warn = function() {
     var msg;
     return console.warn.apply(console, ['Warn:'.yellow].concat(__slice.call((function() {
-      var _results;
+      var _i, _len, _results;
       _results = [];
-      for (msg in arguments) {
+      for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+        msg = arguments[_i];
         _results.push(msg.yellow);
       }
       return _results;
@@ -116,9 +120,10 @@ Domo = (function(_super) {
     var msg;
     if (this.config.debug) {
       return console.error.apply(console, ['Error:'.red].concat(__slice.call((function() {
-        var _results;
+        var _i, _len, _results;
         _results = [];
-        for (msg in arguments) {
+        for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+          msg = arguments[_i];
           _results.push(msg.red);
         }
         return _results;
