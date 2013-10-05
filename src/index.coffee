@@ -51,12 +51,12 @@ class Domo extends EventEmitter
 
     @load module for module in @config.modules if @config.modules?
 
-  log: -> console.log arguments
+  log: -> console.log arguments...
   info: -> console.info 'Info:'.green, (msg.green for msg in arguments)...
   warn: -> console.warn 'Warn:'.yellow, (msg.yellow for msg in arguments)...
   error: -> console.error 'Error:'.red, (msg.red for msg in arguments)... if @config.debug
 
-  say: -> @irc.say arguments
+  say: -> @irc.say arguments...
 
   join: (channel, cb) ->
     @irc.join channel, =>
@@ -150,7 +150,7 @@ class Domo extends EventEmitter
       return -> item.apply @, _.flatten([args, next], true)
     , fn).apply @, arguments
 
-  use: -> @middlewares.push arguments
+  use: -> @middlewares.push arguments...
 
   constructRes: (res, next) ->
     res.channel = res.args[0]

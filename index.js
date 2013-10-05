@@ -87,7 +87,7 @@ Domo = (function(_super) {
   }
 
   Domo.prototype.log = function() {
-    return console.log(arguments);
+    return console.log.apply(console, arguments);
   };
 
   Domo.prototype.info = function() {
@@ -132,7 +132,8 @@ Domo = (function(_super) {
   };
 
   Domo.prototype.say = function() {
-    return this.irc.say(arguments);
+    var _ref;
+    return (_ref = this.irc).say.apply(_ref, arguments);
   };
 
   Domo.prototype.join = function(channel, cb) {
@@ -253,7 +254,8 @@ Domo = (function(_super) {
   };
 
   Domo.prototype.use = function() {
-    return this.middlewares.push(arguments);
+    var _ref;
+    return (_ref = this.middlewares).push.apply(_ref, arguments);
   };
 
   Domo.prototype.constructRes = function(res, next) {
