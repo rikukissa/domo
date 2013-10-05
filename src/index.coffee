@@ -168,7 +168,7 @@ class Domo extends EventEmitter
     return @error "Tried to authenticate. No users configured" unless @config.users?
     return @say res.channel, "You are already authed." if @authedClients.hasOwnProperty res.prefix
 
-    user = res.user = _.findWhere(@config.users, {username: res.params.username, password: res.params.password})
+    user = res.user = _.findWhere(@config.users, username: res.params.username, password: res.params.password)
 
     unless user?
       @error "User #{res.prefix} tried to authenticate with bad credentials"
