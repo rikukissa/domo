@@ -19,7 +19,7 @@ registerDefaultRoutes = (domo) ->
       #{pack.repository.url}
       """
   domo.route '!auth :username :password', domo.authenticate, (res) ->
-    domo.say res.channel, "You are now authed. Hi #{_.str.capitalize(res.user.username)}!"
+    domo.say res.nick, "You are now authed. Hi #{_.str.capitalize(res.user.username)}!"
 
   domo.route '!join :channel', domo.requiresUser, (res) ->
     domo.join res.params.channel

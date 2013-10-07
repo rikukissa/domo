@@ -37,7 +37,7 @@ registerDefaultRoutes = function(domo) {
     })()).join(', ')) + "\n" + pack.repository.url);
   });
   domo.route('!auth :username :password', domo.authenticate, function(res) {
-    return domo.say(res.channel, "You are now authed. Hi " + (_.str.capitalize(res.user.username)) + "!");
+    return domo.say(res.nick, "You are now authed. Hi " + (_.str.capitalize(res.user.username)) + "!");
   });
   domo.route('!join :channel', domo.requiresUser, function(res) {
     return domo.join(res.params.channel);
