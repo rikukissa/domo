@@ -1,10 +1,13 @@
+Q            = require 'q'
 fs           = require 'fs'
 irc          = require 'irc'
+async        = require 'async'
 colors       = require 'colors'
 Router       = require 'routes'
 EventEmitter = require('events').EventEmitter
 _            = require 'underscore'
 _.str        = require 'underscore.string'
+
 
 pack = JSON.parse fs.readFileSync "#{__dirname}/package.json"
 
@@ -36,6 +39,31 @@ registerDefaultRoutes = (domo) ->
     domo.stop res.params.module, (err) ->
       domo.say res.channel, err if err?
       domo.say res.channel, "Module '#{res.params.module}' stopped!"
+
+  domo.route '!reload', domo.requiresUser, (res) ->
+    _.flatten(_.map domo.modules, (module, moduleName) ->
+      [
+        Q.nfcall(domo.stop, moduleName),
+        Q.nfcall(domo.load, moduleName)
+      ]
+    ).reduce(Q.when, Q())
+      .then ->
+        domo.say res.channel, "Reloaded modules #{_.keys(domo.modules).join(', ')}!"
+      .catch (e) ->
+        domo.error e.message
+        domo.say res.channel, "Couldn't reload all modules"
+
+
+  domo.route '!reload :module', domo.requiresUser, (res) ->
+    [
+      Q.nfcall(domo.stop, res.params.module),
+      Q.nfcall(domo.load, res.params.module)
+    ].reduce(Q.when, Q())
+      .then ->
+        domo.say res.channel, "Module '#{res.params.module}' reloaded!"
+      .catch (e) ->
+        domo.error e.message
+        domo.say res.channel, "Couldn't reload module '#{res.params.module}'"
 
 
 class Domo extends EventEmitter

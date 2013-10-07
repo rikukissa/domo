@@ -1,12 +1,16 @@
-var Domo, EventEmitter, Router, colors, fs, irc, pack, registerDefaultRoutes, _,
+var Domo, EventEmitter, Q, Router, async, colors, fs, irc, pack, registerDefaultRoutes, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   __slice = [].slice;
 
+Q = require('q');
+
 fs = require('fs');
 
 irc = require('irc');
+
+async = require('async');
 
 colors = require('colors');
 
@@ -52,12 +56,30 @@ registerDefaultRoutes = function(domo) {
       return domo.say(res.channel, "Module '" + res.params.module + "' loaded!");
     });
   });
-  return domo.route('!stop :module', domo.requiresUser, function(res) {
+  domo.route('!stop :module', domo.requiresUser, function(res) {
     return domo.stop(res.params.module, function(err) {
       if (err != null) {
         domo.say(res.channel, err);
       }
       return domo.say(res.channel, "Module '" + res.params.module + "' stopped!");
+    });
+  });
+  domo.route('!reload', domo.requiresUser, function(res) {
+    return _.flatten(_.map(domo.modules, function(module, moduleName) {
+      return [Q.nfcall(domo.stop, moduleName), Q.nfcall(domo.load, moduleName)];
+    })).reduce(Q.when, Q()).then(function() {
+      return domo.say(res.channel, "Reloaded modules " + (_.keys(domo.modules).join(', ')) + "!");
+    })["catch"](function(e) {
+      domo.error(e.message);
+      return domo.say(res.channel, "Couldn't reload all modules");
+    });
+  });
+  return domo.route('!reload :module', domo.requiresUser, function(res) {
+    return [Q.nfcall(domo.stop, res.params.module), Q.nfcall(domo.load, res.params.module)].reduce(Q.when, Q()).then(function() {
+      return domo.say(res.channel, "Module '" + res.params.module + "' reloaded!");
+    })["catch"](function(e) {
+      domo.error(e.message);
+      return domo.say(res.channel, "Couldn't reload module '" + res.params.module + "'");
     });
   });
 };
@@ -104,11 +126,21 @@ Domo = (function(_super) {
   };
 
   Domo.prototype.join = function(channel, cb) {
-    return this.client.join(channel, cb);
+    var _this = this;
+    return this.client.join(channel, function() {
+      if (cb != null) {
+        return cb.apply(_this, arguments);
+      }
+    });
   };
 
   Domo.prototype.part = function(channel, cb) {
-    return this.client.part(channel, cb);
+    var _this = this;
+    return this.client.part(channel, function() {
+      if (cb != null) {
+        return cb.apply(_this, arguments);
+      }
+    });
   };
 
   Domo.prototype.load = function(mod, cb) {
@@ -127,6 +159,9 @@ Domo = (function(_super) {
       return typeof cb === "function" ? cb(msg) : void 0;
     }
     this.notify("Loaded module " + mod);
+    if (typeof Module === 'function') {
+      module = new Module(this);
+    }
     this.modules[mod] = module;
     if (typeof module.init === "function") {
       module.init(this);

@@ -9,7 +9,8 @@
     "underscore": "~1.4.4",
     "underscore.string": "~2.3.3",
     "routes": "~0.2.0",
-    "colors": "~0.6.2"
+    "colors": "~0.6.2",
+    "q": "~0.9.7"
   },
   "readmeFilename": "README.md",
   "description": "The most awesome thing ever",
