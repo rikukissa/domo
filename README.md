@@ -1,38 +1,14 @@
-# Domo
-IRC-bot that lets you easily write your own tasks for your own needs.
+# ForkingDongles
+An IRC framework that supports plugin modules and middleware.
 
-[Documentation](http://rikukissa.github.io/domo/)
+[Documentation](http://circlepuller.github.io/forkingdongles/)
 
-[NPM Package](https://npmjs.org/package/domo-kun)
+[NPM Package](https://npmjs.org/package/fdongles)
 
-[Usage examples in JavaScript](https://github.com/rikukissa/domo-example) 
-
-![Domo](http://1.bp.blogspot.com/-VJRt-hZit4I/TbjjDINykBI/AAAAAAAABts/E3L3GFL5_hs/s800/09299bd81d5c92fc1e5461d8e04b2e64.gif "Domo")
-
-*Domo at your service!*
-## Get Domo-kun
+## Get ForkingDongles
 
 ```
-npm install domo-kun
+npm install fdongles
 ```
-```
-var Domo, domo;
-Domo = require('domo-kun');
 
-domo = new Domo({
-  nick: 'Domo',
-  userName: 'Domo',
-  realName: 'Domo the awesome IRC-bot',
-  address: 'irc.freenode.org',
-  channels: ['#domo-kun'],
-  users: [
-    {
-      username: 'domoAdmin',
-      password: 'password'
-    }
-  ],
-  debug: true
-});
-
-domo.connect();
-```
+Updated documentation coming soon.
