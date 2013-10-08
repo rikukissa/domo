@@ -8,37 +8,37 @@ _.str        = require 'underscore.string'
 
 pack = JSON.parse fs.readFileSync "#{__dirname}/package.json"
 
-registerDefaultRoutes = (domo) ->
-  domo.route '!domo', (res) ->
-    domo.say res.channel, """
+registerDefaultRoutes = (bot) ->
+  bot.route '!info', (res) ->
+    bot.say res.channel, """
       h :) v#{pack.version}
-      Current channels: #{(chan for chan of domo.channels).join(', ')}
+      Current channels: #{(chan for chan of bot.channels).join(', ')}
       #{pack.repository.url}
       """
-  domo.route '!auth :username :password', domo.authenticate, (res) ->
-    domo.say res.channel, "You are now authed. Hi #{_.str.capitalize(res.user.username)}!"
+  bot.route '!auth :username :password', bot.authenticate, (res) ->
+    bot.say res.channel, "You are now authed. Hi #{_.str.capitalize(res.user.username)}!"
 
-  domo.route '!join :channel', domo.requiresUser, (res) ->
-    domo.join res.params.channel
+  bot.route '!join :channel', bot.requiresUser, (res) ->
+    bot.join res.params.channel
 
-  domo.route '!join :channel :password', domo.requiresUser, (res) ->
-    domo.join res.params.channel + ' ' + res.params.password
+  bot.route '!join :channel :password', bot.requiresUser, (res) ->
+    bot.join res.params.channel + ' ' + res.params.password
 
-  domo.route '!part :channel', domo.requiresUser, (res) ->
-    domo.part res.params.channel
+  bot.route '!part :channel', bot.requiresUser, (res) ->
+    bot.part res.params.channel
 
-  domo.route '!load :module', domo.requiresUser, (res) ->
-    domo.load res.params.module, (err) ->
-      return domo.say res.channel, err if err?
-      domo.say res.channel, "Module '#{res.params.module}' loaded!"
+  bot.route '!load :module', bot.requiresUser, (res) ->
+    bot.load res.params.module, (err) ->
+      return bot.say res.channel, err if err?
+      bot.say res.channel, "Module '#{res.params.module}' loaded!"
 
-  domo.route '!stop :module', domo.requiresUser, (res) ->
-    domo.stop res.params.module, (err) ->
-      domo.say res.channel, err if err?
-      domo.say res.channel, "Module '#{res.params.module}' stopped!"
+  bot.route '!stop :module', bot.requiresUser, (res) ->
+    bot.stop res.params.module, (err) ->
+      bot.say res.channel, err if err?
+      bot.say res.channel, "Module '#{res.params.module}' stopped!"
 
 
-class Domo extends EventEmitter
+class module.exports extends EventEmitter
   constructor: (@config) ->
     @router = new Router
     @modules = {}
@@ -136,9 +136,7 @@ class Domo extends EventEmitter
     return unless (result = @router.match path)?
     result.fn.call @, _.extend result, data
 
-  wrap: (fn, middlewares, useRegisted = true) -> () =>
-    args = Array.prototype.slice.call(arguments, 0)
-
+  wrap: (fn, middlewares, useRegisted = true) -> (args...) =>
     combinedMiddlewares =
       if useRegisted
         @middlewares.concat(middlewares)
@@ -147,7 +145,7 @@ class Domo extends EventEmitter
 
     _.reduceRight(combinedMiddlewares, (memo, item) =>
       next = => memo.apply @, args
-      return -> item.apply @, _.flatten([args, next], true)
+      return -> item.apply @, [args..., next]
     , fn).apply @, arguments
 
   use: -> @middlewares.push arguments...
@@ -182,5 +180,3 @@ class Domo extends EventEmitter
     unless res.user?
       return @error "User #{res.prefix} tried to use '#{res.route}' route"
     next()
-
-module.exports = Domo

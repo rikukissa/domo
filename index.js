@@ -1,4 +1,4 @@
-var Domo, EventEmitter, Router, colors, fs, irc, pack, registerDefaultRoutes, _,
+var EventEmitter, Router, colors, fs, irc, pack, registerDefaultRoutes, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -20,52 +20,52 @@ _.str = require('underscore.string');
 
 pack = JSON.parse(fs.readFileSync("" + __dirname + "/package.json"));
 
-registerDefaultRoutes = function(domo) {
-  domo.route('!domo', function(res) {
+registerDefaultRoutes = function(bot) {
+  bot.route('!info', function(res) {
     var chan;
-    return domo.say(res.channel, "h :) v" + pack.version + "\nCurrent channels: " + (((function() {
+    return bot.say(res.channel, "h :) v" + pack.version + "\nCurrent channels: " + (((function() {
       var _results;
       _results = [];
-      for (chan in domo.channels) {
+      for (chan in bot.channels) {
         _results.push(chan);
       }
       return _results;
     })()).join(', ')) + "\n" + pack.repository.url);
   });
-  domo.route('!auth :username :password', domo.authenticate, function(res) {
-    return domo.say(res.channel, "You are now authed. Hi " + (_.str.capitalize(res.user.username)) + "!");
+  bot.route('!auth :username :password', bot.authenticate, function(res) {
+    return bot.say(res.channel, "You are now authed. Hi " + (_.str.capitalize(res.user.username)) + "!");
   });
-  domo.route('!join :channel', domo.requiresUser, function(res) {
-    return domo.join(res.params.channel);
+  bot.route('!join :channel', bot.requiresUser, function(res) {
+    return bot.join(res.params.channel);
   });
-  domo.route('!join :channel :password', domo.requiresUser, function(res) {
-    return domo.join(res.params.channel + ' ' + res.params.password);
+  bot.route('!join :channel :password', bot.requiresUser, function(res) {
+    return bot.join(res.params.channel + ' ' + res.params.password);
   });
-  domo.route('!part :channel', domo.requiresUser, function(res) {
-    return domo.part(res.params.channel);
+  bot.route('!part :channel', bot.requiresUser, function(res) {
+    return bot.part(res.params.channel);
   });
-  domo.route('!load :module', domo.requiresUser, function(res) {
-    return domo.load(res.params.module, function(err) {
+  bot.route('!load :module', bot.requiresUser, function(res) {
+    return bot.load(res.params.module, function(err) {
       if (err != null) {
-        return domo.say(res.channel, err);
+        return bot.say(res.channel, err);
       }
-      return domo.say(res.channel, "Module '" + res.params.module + "' loaded!");
+      return bot.say(res.channel, "Module '" + res.params.module + "' loaded!");
     });
   });
-  return domo.route('!stop :module', domo.requiresUser, function(res) {
-    return domo.stop(res.params.module, function(err) {
+  return bot.route('!stop :module', bot.requiresUser, function(res) {
+    return bot.stop(res.params.module, function(err) {
       if (err != null) {
-        domo.say(res.channel, err);
+        bot.say(res.channel, err);
       }
-      return domo.say(res.channel, "Module '" + res.params.module + "' stopped!");
+      return bot.say(res.channel, "Module '" + res.params.module + "' stopped!");
     });
   });
 };
 
-Domo = (function(_super) {
-  __extends(Domo, _super);
+module.exports = (function(_super) {
+  __extends(exports, _super);
 
-  function Domo(config) {
+  function exports(config) {
     var module, _i, _len, _ref;
     this.config = config;
     this.stop = __bind(this.stop, this);
@@ -86,11 +86,11 @@ Domo = (function(_super) {
     }
   }
 
-  Domo.prototype.log = function() {
+  exports.prototype.log = function() {
     return console.log.apply(console, arguments);
   };
 
-  Domo.prototype.info = function() {
+  exports.prototype.info = function() {
     var msg;
     return console.info.apply(console, ['Info:'.green].concat(__slice.call((function() {
       var _i, _len, _results;
@@ -103,7 +103,7 @@ Domo = (function(_super) {
     }).apply(this, arguments))));
   };
 
-  Domo.prototype.warn = function() {
+  exports.prototype.warn = function() {
     var msg;
     return console.warn.apply(console, ['Warn:'.yellow].concat(__slice.call((function() {
       var _i, _len, _results;
@@ -116,7 +116,7 @@ Domo = (function(_super) {
     }).apply(this, arguments))));
   };
 
-  Domo.prototype.error = function() {
+  exports.prototype.error = function() {
     var msg;
     if (this.config.debug) {
       return console.error.apply(console, ['Error:'.red].concat(__slice.call((function() {
@@ -131,12 +131,12 @@ Domo = (function(_super) {
     }
   };
 
-  Domo.prototype.say = function() {
+  exports.prototype.say = function() {
     var _ref;
     return (_ref = this.irc).say.apply(_ref, arguments);
   };
 
-  Domo.prototype.join = function(channel, cb) {
+  exports.prototype.join = function(channel, cb) {
     var _this = this;
     return this.irc.join(channel, function() {
       if (cb != null) {
@@ -145,7 +145,7 @@ Domo = (function(_super) {
     });
   };
 
-  Domo.prototype.part = function(channel, cb) {
+  exports.prototype.part = function(channel, cb) {
     var _this = this;
     return this.irc.part(channel, function() {
       if (cb != null) {
@@ -154,7 +154,7 @@ Domo = (function(_super) {
     });
   };
 
-  Domo.prototype.load = function(mod, cb) {
+  exports.prototype.load = function(mod, cb) {
     var err, module, msg;
     try {
       module = require(mod);
@@ -180,7 +180,7 @@ Domo = (function(_super) {
     return typeof cb === "function" ? cb(null) : void 0;
   };
 
-  Domo.prototype.stop = function(mod, cb) {
+  exports.prototype.stop = function(mod, cb) {
     var msg, _base;
     if (!this.modules.hasOwnProperty(mod)) {
       msg = "Module " + mod + " not loaded";
@@ -196,7 +196,7 @@ Domo = (function(_super) {
     return typeof cb === "function" ? cb(null) : void 0;
   };
 
-  Domo.prototype.connect = function() {
+  exports.prototype.connect = function() {
     var _this = this;
     this.info("Connecting to server " + this.config.address + ".");
     this.irc = new irc.Client(this.config.address, this.config.nick, this.config);
@@ -211,20 +211,20 @@ Domo = (function(_super) {
     return this.irc;
   };
 
-  Domo.prototype.route = function() {
+  exports.prototype.route = function() {
     var fn, middlewares, path, _i;
     path = arguments[0], middlewares = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), fn = arguments[_i++];
     return this.router.addRoute(path, this.wrap(fn, middlewares));
   };
 
-  Domo.prototype.on = function() {
+  exports.prototype.on = function() {
     var event, fn, middlewares, _i;
     event = arguments[0], middlewares = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), fn = arguments[_i++];
     this.irc.addListener(event, this.wrap(fn, middlewares, false));
-    return Domo.__super__.on.apply(this, arguments);
+    return exports.__super__.on.apply(this, arguments);
   };
 
-  Domo.prototype.match = function(path, data) {
+  exports.prototype.match = function(path, data) {
     var result;
     if ((result = this.router.match(path)) == null) {
       return;
@@ -232,14 +232,14 @@ Domo = (function(_super) {
     return result.fn.call(this, _.extend(result, data));
   };
 
-  Domo.prototype.wrap = function(fn, middlewares, useRegisted) {
+  exports.prototype.wrap = function(fn, middlewares, useRegisted) {
     var _this = this;
     if (useRegisted == null) {
       useRegisted = true;
     }
     return function() {
       var args, combinedMiddlewares;
-      args = Array.prototype.slice.call(arguments, 0);
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       combinedMiddlewares = useRegisted ? _this.middlewares.concat(middlewares) : middlewares;
       return _.reduceRight(combinedMiddlewares, function(memo, item) {
         var next;
@@ -247,18 +247,18 @@ Domo = (function(_super) {
           return memo.apply(_this, args);
         };
         return function() {
-          return item.apply(this, _.flatten([args, next], true));
+          return item.apply(this, __slice.call(args).concat([next]));
         };
       }, fn).apply(_this, arguments);
     };
   };
 
-  Domo.prototype.use = function() {
+  exports.prototype.use = function() {
     var _ref;
     return (_ref = this.middlewares).push.apply(_ref, arguments);
   };
 
-  Domo.prototype.constructRes = function(res, next) {
+  exports.prototype.constructRes = function(res, next) {
     res.channel = res.args[0];
     res.message = res.args[1];
     res.username = res.user;
@@ -266,7 +266,7 @@ Domo = (function(_super) {
     return next();
   };
 
-  Domo.prototype.authenticate = function(res, next) {
+  exports.prototype.authenticate = function(res, next) {
     var user;
     if (this.config.users == null) {
       return this.error("Tried to authenticate. No users configured");
@@ -286,15 +286,13 @@ Domo = (function(_super) {
     return next();
   };
 
-  Domo.prototype.requiresUser = function(res, next) {
+  exports.prototype.requiresUser = function(res, next) {
     if (res.user == null) {
       return this.error("User " + res.prefix + " tried to use '" + res.route + "' route");
     }
     return next();
   };
 
-  return Domo;
+  return exports;
 
 })(EventEmitter);
-
-module.exports = Domo;
