@@ -1,7 +1,9 @@
 # ForkingDongles
 An IRC framework that supports plugin modules and middleware.
 
-[Documentation](http://circlepuller.github.io/forkingdongles/)
+[Fork on GitHub](http://github.com/Circlepuller/ForkingDongles)
+
+[Documentation](http://circlepuller.github.io/ForkingDongles/)
 
 [NPM Package](https://npmjs.org/package/fdongles)
 
