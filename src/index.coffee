@@ -1,7 +1,7 @@
-fs           = require 'fs'
-irc          = require 'irc'
-colors       = require 'colors'
-_            = require 'underscore'
+colors = require 'colors'
+irc    = require 'irc'
+_      = require 'underscore'
+util   = require 'util'
 
 class module.exports extends irc.Client
   constructor: ->
@@ -19,15 +19,21 @@ class module.exports extends irc.Client
 
     super
 
-    @once 'registered', ->
-      @info "Connected to #{@opt.server}"
+    @once 'registered', -> @info "Connected to #{@opt.server}"
 
-  log: -> console.log arguments...
-  info: -> console.info 'Info:'.green, (msg.green for msg in arguments)...
-  warn: -> console.warn 'Warn:'.yellow, (msg.yellow for msg in arguments)...
+  log: -> util.log arg, colors: true for arg in arguments
+
+  info: ->
+    for arg in arguments
+      util.log 'Info: '.green + util.inspect arg, colors: true
+
+  warn: ->
+    for arg in arguments
+      util.log 'Warn: '.yellow + util.inspect arg, colors: true
 
   error: ->
-    console.error 'Error:'.red, (msg.red for msg in arguments)... if @opt.debug
+    for arg in arguments
+      util.log 'Error: '.red + util.inspect arg, colors: true
 
   load: (mod, cb) =>
     try
@@ -72,6 +78,8 @@ class module.exports extends irc.Client
 
   addListener: (event, middlewares..., fn) ->
     super event, @wrap fn, middlewares
+
+  on: -> @addListener arguments...
 
   once: (event, middlewares..., fn) -> super event, @wrap fn, middlewares
 

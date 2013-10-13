@@ -1,16 +1,16 @@
-var colors, fs, irc, _,
+var colors, irc, util, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   __slice = [].slice;
 
-fs = require('fs');
+colors = require('colors');
 
 irc = require('irc');
 
-colors = require('colors');
-
 _ = require('underscore');
+
+util = require('util');
 
 module.exports = (function(_super) {
   __extends(exports, _super);
@@ -38,61 +38,56 @@ module.exports = (function(_super) {
     this.info("Connecting to " + this.opt.server);
     exports.__super__.connect.apply(this, arguments);
     return this.once('registered', function() {
-      var channel;
-      return this.info("Connected to " + this.opt.server, "Current channels: " + (((function() {
-        var _results;
-        _results = [];
-        for (channel in this.chans) {
-          _results.push(channel);
-        }
-        return _results;
-      }).call(this)).join(', ')));
+      return this.info("Connected to " + this.opt.server);
     });
   };
 
   exports.prototype.log = function() {
-    return console.log.apply(console, arguments);
+    var arg, _i, _len, _results;
+    _results = [];
+    for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+      arg = arguments[_i];
+      _results.push(util.log(arg, {
+        colors: true
+      }));
+    }
+    return _results;
   };
 
   exports.prototype.info = function() {
-    var msg;
-    return console.info.apply(console, ['Info:'.green].concat(__slice.call((function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = arguments.length; _i < _len; _i++) {
-        msg = arguments[_i];
-        _results.push(msg.green);
-      }
-      return _results;
-    }).apply(this, arguments))));
+    var arg, _i, _len, _results;
+    _results = [];
+    for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+      arg = arguments[_i];
+      _results.push(util.log('Info: '.green + util.inspect(arg, {
+        colors: true
+      })));
+    }
+    return _results;
   };
 
   exports.prototype.warn = function() {
-    var msg;
-    return console.warn.apply(console, ['Warn:'.yellow].concat(__slice.call((function() {
-      var _i, _len, _results;
-      _results = [];
-      for (_i = 0, _len = arguments.length; _i < _len; _i++) {
-        msg = arguments[_i];
-        _results.push(msg.yellow);
-      }
-      return _results;
-    }).apply(this, arguments))));
+    var arg, _i, _len, _results;
+    _results = [];
+    for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+      arg = arguments[_i];
+      _results.push(util.log('Warn: '.yellow + util.inspect(arg, {
+        colors: true
+      })));
+    }
+    return _results;
   };
 
   exports.prototype.error = function() {
-    var msg;
-    if (this.opt.debug) {
-      return console.error.apply(console, ['Error:'.red].concat(__slice.call((function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = arguments.length; _i < _len; _i++) {
-          msg = arguments[_i];
-          _results.push(msg.red);
-        }
-        return _results;
-      }).apply(this, arguments))));
+    var arg, _i, _len, _results;
+    _results = [];
+    for (_i = 0, _len = arguments.length; _i < _len; _i++) {
+      arg = arguments[_i];
+      _results.push(util.log('Error: '.red + util.inspect(arg, {
+        colors: true
+      })));
     }
+    return _results;
   };
 
   exports.prototype.load = function(mod, cb) {
@@ -141,6 +136,10 @@ module.exports = (function(_super) {
     var event, fn, middlewares, _i;
     event = arguments[0], middlewares = 3 <= arguments.length ? __slice.call(arguments, 1, _i = arguments.length - 1) : (_i = 1, []), fn = arguments[_i++];
     return exports.__super__.addListener.call(this, event, this.wrap(fn, middlewares));
+  };
+
+  exports.prototype.on = function() {
+    return this.addListener.apply(this, arguments);
   };
 
   exports.prototype.once = function() {
