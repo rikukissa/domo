@@ -20,8 +20,7 @@ class module.exports extends irc.Client
     super
 
     @once 'registered', ->
-      @info "Connected to #{@opt.server}",
-            "Current channels: #{(channel for channel of @chans).join ', '}"
+      @info "Connected to #{@opt.server}"
 
   log: -> console.log arguments...
   info: -> console.info 'Info:'.green, (msg.green for msg in arguments)...
