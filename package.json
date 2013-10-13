@@ -1,14 +1,12 @@
 {
   "name": "fdongles",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "engines": {
-    "node": "0.9.3"
+    "node": "~0.10.20"
   },
   "dependencies": {
-    "irc": "0.3.4",
+    "irc": "~0.3.6",
     "underscore": "~1.4.4",
-    "underscore.string": "~2.3.3",
-    "routes": "~0.2.0",
     "colors": "~0.6.2"
   },
   "readmeFilename": "README.md",
