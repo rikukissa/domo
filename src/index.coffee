@@ -16,6 +16,7 @@ registerDefaultRoutes = (domo) ->
     domo.say res.channel, """
       h :) v#{pack.version}
       Current channels: #{(chan for chan of domo.channels).join(', ')}
+      Loaded modules: #{(mod for mod of domo.modules).join(', ')}
       #{pack.repository.url}
       """
   domo.route '!auth :username :password', domo.authenticate, (res) ->
@@ -100,6 +101,7 @@ class Domo extends EventEmitter
     try
       module = require(mod)
     catch err
+
       msg = if err.code is 'MODULE_NOT_FOUND'
         "Module #{mod} not found"
       else

@@ -26,12 +26,19 @@ pack = JSON.parse(fs.readFileSync("" + __dirname + "/package.json"));
 
 registerDefaultRoutes = function(domo) {
   domo.route('!domo', function(res) {
-    var chan;
+    var chan, mod;
     return domo.say(res.channel, "h :) v" + pack.version + "\nCurrent channels: " + (((function() {
       var _results;
       _results = [];
       for (chan in domo.channels) {
         _results.push(chan);
+      }
+      return _results;
+    })()).join(', ')) + "\nLoaded modules: " + (((function() {
+      var _results;
+      _results = [];
+      for (mod in domo.modules) {
+        _results.push(mod);
       }
       return _results;
     })()).join(', ')) + "\n" + pack.repository.url);
@@ -150,7 +157,7 @@ Domo = (function(_super) {
     } catch (_error) {
       err = _error;
       msg = err.code === 'MODULE_NOT_FOUND' ? "Module " + mod + " not found" : "Module " + mod + " cannot be loaded";
-      this.error(msg);
+      this.error(msg, err.message);
       return typeof cb === "function" ? cb(msg) : void 0;
     }
     if (this.modules.hasOwnProperty(mod)) {
