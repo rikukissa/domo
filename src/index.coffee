@@ -105,7 +105,7 @@ class Domo extends EventEmitter
       else
         "Module #{mod} cannot be loaded"
 
-      @error msg
+      @error msg, err.message
       return cb?(msg)
 
     if @modules.hasOwnProperty mod
