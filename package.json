@@ -5,7 +5,7 @@
     "node": "0.9.3"
   },
   "dependencies": {
-    "irc": "0.3.4",
+    "irc": "~0.3.6",
     "underscore": "~1.4.4",
     "underscore.string": "~2.3.3",
     "routes": "~0.2.0",
