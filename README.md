@@ -24,6 +24,7 @@ domo = new Domo({
   userName: 'Domo',
   realName: 'Domo the awesome IRC-bot',
   address: 'irc.freenode.org',
+  modules: ['domo-url', 'domo-eval'],
   channels: ['#domo-kun'],
   users: [
     {
