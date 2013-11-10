@@ -47,6 +47,7 @@ html
                    userName: 'Domo',
                    realName: 'Domo the awesome IRC-bot',
                    address: 'irc.freenode.org',
+                   modules: ['domo-url', 'domo-eval'],
                    channels: ['#domo'],
                    users: [
                      {
@@ -70,6 +71,8 @@ html
               li.list-item
                 span.list-item-attribute address
                 |Address of the IRC server you want your bot to connect to
+              li.list-item
+                |List of modules you want to auto load
               li.list-item
                 span.list-item-attribute channels
                 |List of channels you want your bot to join after connecting to server
