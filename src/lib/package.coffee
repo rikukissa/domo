@@ -1,0 +1,1 @@
+pkginfo = require('pkginfo') module

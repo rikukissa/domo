@@ -1,70 +1,10 @@
-Q            = require 'q'
+_            = require 'underscore'
 fs           = require 'fs'
 irc          = require 'irc'
 async        = require 'async'
 colors       = require 'colors'
 Router       = require 'routes'
 EventEmitter = require('events').EventEmitter
-_            = require 'underscore'
-_.str        = require 'underscore.string'
-
-
-pack = require '../package.json'
-
-registerDefaultRoutes = (domo) ->
-  domo.route '!domo', (res) ->
-    domo.say res.channel, """
-      h :) v#{pack.version}
-      Current channels: #{(chan for chan of domo.channels).join(', ')}
-      #{pack.repository.url}
-      """
-  domo.route '!auth :username :password', domo.authenticate, (res) ->
-    domo.say res.nick, "You are now authed. Hi #{_.str.capitalize(res.user.username)}!"
-
-  domo.route '!join :channel', domo.requiresUser, (res) ->
-    domo.join res.params.channel
-
-  domo.route '!join :channel :password', domo.requiresUser, (res) ->
-    domo.join res.params.channel + ' ' + res.params.password
-
-  domo.route '!part :channel', domo.requiresUser, (res) ->
-    domo.part res.params.channel
-
-  domo.route '!load :module', domo.requiresUser, (res) ->
-    domo.load res.params.module, (err) ->
-      return domo.say res.channel, err if err?
-      domo.say res.channel, "Module '#{res.params.module}' loaded!"
-
-  domo.route '!stop :module', domo.requiresUser, (res) ->
-    domo.stop res.params.module, (err) ->
-      domo.say res.channel, err if err?
-      domo.say res.channel, "Module '#{res.params.module}' stopped!"
-
-  domo.route '!reload', domo.requiresUser, (res) ->
-    _.flatten(_.map domo.modules, (module, moduleName) ->
-      [
-        Q.nfcall(domo.stop, moduleName),
-        Q.nfcall(domo.load, moduleName)
-      ]
-    ).reduce(Q.when, Q())
-      .then ->
-        domo.say res.channel, "Reloaded modules #{_.keys(domo.modules).join(', ')}!"
-      .catch (e) ->
-        domo.error e.message
-        domo.say res.channel, "Couldn't reload all modules"
-
-
-  domo.route '!reload :module', domo.requiresUser, (res) ->
-    [
-      Q.nfcall(domo.stop, res.params.module),
-      Q.nfcall(domo.load, res.params.module)
-    ].reduce(Q.when, Q())
-      .then ->
-        domo.say res.channel, "Module '#{res.params.module}' reloaded!"
-      .catch (e) ->
-        domo.error e.message
-        domo.say res.channel, "Couldn't reload module '#{res.params.module}'"
-
 
 class Domo extends EventEmitter
   constructor: (@config) ->
@@ -74,9 +14,6 @@ class Domo extends EventEmitter
     @middlewares = []
     @config = @config || {}
     @use @constructRes
-
-    registerDefaultRoutes @
-
     @load module for module in @config.modules if @config.modules?
 
   error: (msgs...) ->
@@ -173,6 +110,9 @@ class Domo extends EventEmitter
     , fn).apply this, arguments
 
   use: (mw) ->
+    if typeof mw is 'object'
+      return mw.init(this)
+
     @middlewares.push mw
 
   constructRes: (res, next) ->
@@ -205,5 +145,7 @@ class Domo extends EventEmitter
     unless res.user?
       return @error "User #{res.prefix} tried to use '#{res.route}' route"
     next()
+
+  basicRoutes: require './lib/basic-routes'
 
 module.exports = Domo
