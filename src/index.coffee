@@ -9,7 +9,7 @@ _            = require 'underscore'
 _.str        = require 'underscore.string'
 
 
-pack = JSON.parse fs.readFileSync "#{__dirname}/package.json"
+pack = require '../package.json'
 
 registerDefaultRoutes = (domo) ->
   domo.route '!domo', (res) ->

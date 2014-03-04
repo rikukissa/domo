@@ -1,7 +1,7 @@
 _      = require 'underscore'
 assert = require 'assert'
 
-Domo   = require '../index'
+Domo   = require '../'
 
 createRes = (msg) ->
   args: ['#test', msg]

@@ -4,21 +4,20 @@
   "engines": {
     "node": "0.9.3"
   },
+  "scripts": {
+    "test": "mocha --compilers coffee:coffee-script/register"
+  },
   "dependencies": {
     "irc": "0.3.4",
     "underscore": "~1.4.4",
     "underscore.string": "~2.3.3",
     "routes": "~0.2.0",
     "colors": "~0.6.2",
-    "q": "~0.9.7"
+    "q": "~0.9.7",
+    "coffee-script": "~1.7.1"
   },
   "readmeFilename": "README.md",
   "description": "The most awesome thing ever",
-  "devDependencies": {
-    "james": "~0.1.15",
-    "james-uglify": "~0.1.0",
-    "james-coffee": "~0.1.1"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/rikukissa/domo.git"
