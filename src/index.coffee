@@ -118,6 +118,25 @@ class Domo extends EventEmitter
 
     @router.addRoute path, fn
 
+  destroyRoute: (path, fn) ->
+
+    # Destroy from router
+    route = _.find @router.routes, (route) ->
+      route.src is path and route.fn is fn
+
+    index = @router.routes.indexOf route
+
+    @router.routes.splice index, 1
+
+    # Destroy from domo's routes
+    routeItem = _.find @routes[path], (route) ->
+      route.fn is fn
+
+    itemIndex = @routes[path].indexOf routeItem
+
+    @routes[path].splice itemIndex, 1
+
+
   matchRoutes: (path, data) ->
     return unless (result = @router.match path)?
 

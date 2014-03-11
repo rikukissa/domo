@@ -71,3 +71,20 @@ describe 'Message dispatcher', ->
 
     domo.matchRoutes 'hello world', createRes 'hello world'
 
+  it 'it should allow destroying routes', (done) ->
+    domo = new Domo()
+
+    fail = ->
+      throw new Error 'Route wasnt destroyed properly'
+
+    success = (res) ->
+      done()
+
+
+    domo.route 'hello :what', fail
+    domo.route 'hello :what', success
+
+    domo.destroyRoute 'hello :what', fail
+
+    domo.matchRoutes 'hello world', createRes 'hello world'
+
