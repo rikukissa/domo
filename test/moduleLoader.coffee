@@ -5,13 +5,22 @@ rimraf = require 'rimraf'
 
 Domo = require '../'
 
+createRes = (msg) ->
+  args: ['#test', msg]
+  user: 'Test'
+  prefix: '!test@test.com'
+
 createModule = (num = 2)->
   mkdirp.sync 'node_modules/test-module'
   fs.writeFileSync 'node_modules/test-module/index.js', """
     module.exports = {
-      init: function() {},
       foo: function() {
         return #{num};
+      },
+      routes: {
+        'hello': function(res) {
+          this.say(res.channel, 'hello there');
+        }
       }
     }
   """
@@ -69,5 +78,39 @@ describe 'Module loader', ->
           assert.equal domo.modules['test-module'].foo(), 3
 
           done()
+
+  it 'should register all routes', (done) ->
+    createModule()
+
+    domo = new Domo()
+
+    domo.say = (channel, message) ->
+      assert.equal message, 'hello there'
+      done()
+
+    domo.load 'test-module', (err) ->
+      throw err if err?
+
+      domo.matchRoutes 'hello', createRes 'hello world'
+
+  it 'should destroy all routes when a module is destroyed', (done) ->
+    createModule()
+
+    domo = new Domo()
+
+    domo.say = (channel, message) ->
+      throw new Error 'module route was not destroyed properly'
+
+    domo.load 'test-module', (err) ->
+      throw err if err?
+
+      domo.stop 'test-module', (err) ->
+        throw err if err?
+
+        domo.matchRoutes 'hello', createRes 'hello world'
+
+        setTimeout ->
+          done()
+        , 10
 
 
