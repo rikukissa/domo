@@ -37,6 +37,9 @@ class Domo extends EventEmitter
   notify: (msg) ->
     console.log 'Notify:'.green, msg.green
 
+  warn: (msg) ->
+    console.log 'Warning:'.yellow, msg.yellow
+
   say: (channel, msg) =>
     @client.say channel, msg
 
@@ -71,7 +74,14 @@ class Domo extends EventEmitter
 
     @modules[mod] = module
 
-    module.init?(@)
+    # DEPRECATED
+    if module.init?
+      @warn "Module #{mod} uses deprecated 'init' method. Init/destruct methods are deprecated since 0.2"
+      module.init(@)
+
+    # Register module routes
+    if module.routes?
+      @route path, fn for path, fn of module.routes
 
     cb?(null)
 
@@ -81,9 +91,15 @@ class Domo extends EventEmitter
       @error msg
       return cb?(msg)
 
-    @modules[mod].destruct?()
     delete require.cache[require.resolve(mod)]
+
+    module = @modules[mod]
+
     delete @modules[mod]
+
+    # Delete routes
+    if module.routes?
+      @destroyRoute path, fn for path, fn of module.routes
 
     @notify "Stopped module #{mod}"
 
