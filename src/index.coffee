@@ -6,6 +6,19 @@ colors       = require 'colors'
 Router       = require 'routes'
 EventEmitter = require('events').EventEmitter
 
+responseConstructor = (res, next) ->
+  res.channel = res.args[0]
+  res.message = res.args[1]
+  res.username = res.user
+
+  res.user = unless @authedClients.hasOwnProperty(res.prefix)
+    null
+  else
+    @authedClients[res.prefix]
+
+  next()
+
+
 class Domo extends EventEmitter
   constructor: (@config) ->
     @router = new Router
@@ -13,7 +26,9 @@ class Domo extends EventEmitter
     @authedClients = []
     @middlewares = []
     @config = @config || {}
-    @use @constructRes
+    @routes = []
+
+    @use _.bind responseConstructor, this
     @load module for module in @config.modules if @config.modules?
 
   error: (msgs...) ->
@@ -88,7 +103,7 @@ class Domo extends EventEmitter
 
     @client.addListener 'message', (nick, channel, msg, res) =>
       @emit.apply this, arguments
-      @match msg, res
+      @matchRoute msg, res
 
     @channels = @client.chans
 
@@ -96,11 +111,19 @@ class Domo extends EventEmitter
 
 
   route: (path, middlewares..., fn) ->
-    @router.addRoute path, @wrap(fn, middlewares)
+    @routes[path] ?= []
+    @routes[path].push
+      fn: fn
+      middlewares: middlewares
 
-  match: (path, data) ->
+    @router.addRoute path, fn
+
+  matchRoutes: (path, data) ->
     return unless (result = @router.match path)?
-    result.fn.call this, _.extend result, data
+
+    @routes[result.route].forEach (route) =>
+      chain = @wrap route.fn, route.middlewares
+      chain.call this, _.extend result, data
 
   wrap: (fn, middlewares) -> () =>
     args = Array.prototype.slice.call(arguments, 0)
@@ -115,17 +138,6 @@ class Domo extends EventEmitter
 
     @middlewares.push mw
 
-  constructRes: (res, next) ->
-    res.channel = res.args[0]
-    res.message = res.args[1]
-    res.username = res.user
-
-    res.user = unless @authedClients.hasOwnProperty(res.prefix)
-      null
-    else
-      @authedClients[res.prefix]
-
-    next()
 
   authenticate: (res, next) ->
     return @error "Tried to authenticate. No users configured" unless @config.users?
