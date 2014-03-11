@@ -1,7 +1,6 @@
 _            = require 'underscore'
 fs           = require 'fs'
 irc          = require 'irc'
-async        = require 'async'
 colors       = require 'colors'
 Router       = require 'routes'
 EventEmitter = require('events').EventEmitter
