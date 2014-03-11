@@ -118,7 +118,7 @@ class Domo extends EventEmitter
 
     @client.addListener 'message', (nick, channel, msg, res) =>
       @emit.apply this, arguments
-      @matchRoute msg, res
+      @matchRoutes msg, res
 
     @channels = @client.chans
 
