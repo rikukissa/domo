@@ -185,13 +185,13 @@ class Domo extends EventEmitter
 
   authenticate: (res, next) ->
     return @error "Tried to authenticate. No users configured" unless @config.users?
-    return @say res.channel, "You are already authed." if @authedClients.hasOwnProperty res.prefix
+    return @say res.nick, "You are already authed." if @authedClients.hasOwnProperty res.prefix
 
     user = res.user = _.findWhere(@config.users, {username: res.params.username, password: res.params.password})
 
     unless user?
       @error "User #{res.prefix} tried to authenticate with bad credentials"
-      return @say res.channel, "Authentication failed. Bad credentials."
+      return @say res.nick, "Authentication failed. Bad credentials."
 
     @authedClients[res.prefix] = user
 
