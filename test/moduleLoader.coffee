@@ -1,3 +1,5 @@
+_ = require 'underscore'
+async = require 'async'
 fs = require 'fs'
 assert = require 'assert'
 mkdirp = require 'mkdirp'
@@ -10,7 +12,7 @@ createRes = (msg) ->
   user: 'Test'
   prefix: '!test@test.com'
 
-createModule = (num = 2)->
+createModule = (num = 2, suffix = '')->
   mkdirp.sync 'node_modules/test-module'
   fs.writeFileSync 'node_modules/test-module/index.js', """
     module.exports = {
@@ -19,7 +21,7 @@ createModule = (num = 2)->
       },
       routes: {
         'hello': function(res) {
-          this.say(res.channel, 'hello there');
+          this.say(res.channel, 'hello there#{suffix}');
         }
       }
     }
@@ -70,7 +72,6 @@ describe 'Module loader', ->
         throw err if err?
         assert.ok not domo.modules['test-module']?
 
-        removeModules()
         createModule(3)
 
         domo.load 'test-module', (err) ->
@@ -112,5 +113,47 @@ describe 'Module loader', ->
         setTimeout ->
           done()
         , 10
+
+  it 'should keep modules working even if they are loaded/unloaded multiple times', (done) ->
+    createModule()
+
+    domo = new Domo()
+
+    domo.say = (channel, message) ->
+      assert.equal message, 'hello there'
+      done()
+
+    async.series [
+      _.partial domo.load, 'test-module'
+      _.partial domo.stop, 'test-module'
+      _.partial domo.load, 'test-module'
+      _.partial domo.stop, 'test-module'
+      _.partial domo.load, 'test-module'
+    ], (err) ->
+      throw new Error err if err?
+      domo.matchRoutes 'hello', createRes 'hello world'
+
+  it 'should keep modules working even if they are loaded/unloaded multiple times and changed in the middle', (done) ->
+    createModule()
+
+    domo = new Domo()
+
+    domo.say = (channel, message) ->
+      assert.equal message, 'hello theres'
+      done()
+
+    async.series [
+      _.partial domo.load, 'test-module'
+      _.partial domo.stop, 'test-module'
+      (callback) ->
+        createModule 2, 's'
+        callback null
+      _.partial domo.load, 'test-module'
+      _.partial domo.stop, 'test-module'
+      _.partial domo.load, 'test-module'
+    ], (err) ->
+      throw new Error err if err?
+      domo.matchRoutes 'hello', createRes 'hello world'
+
 
 
