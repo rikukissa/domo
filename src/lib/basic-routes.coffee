@@ -30,7 +30,7 @@ module.exports =
 
     domo.route '!stop :module', domo.requiresUser, (res) ->
       domo.stop res.params.module, (err) ->
-        domo.say res.channel, err if err?
+        return domo.say res.channel, err if err?
         domo.say res.channel, "Module '#{res.params.module}' stopped!"
 
     domo.route '!reload', domo.requiresUser, (res) ->
