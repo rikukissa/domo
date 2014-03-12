@@ -5,7 +5,7 @@
     "node": "0.9.3"
   },
   "scripts": {
-    "test": "mocha --compilers coffee:coffee-script/register"
+    "test": "mocha --compilers coffee:coffee-script/register -t 10000"
   },
   "dependencies": {
     "irc": "0.3.4",

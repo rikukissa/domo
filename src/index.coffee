@@ -124,7 +124,7 @@ class Domo extends EventEmitter
 
     @client.addListener 'registered', =>
       @notify "Connected to server #{@config.address}.\n\tChannels joined: #{@config.channels.join(', ')}"
-      @emit.apply this, arguments
+      @emit.apply this, ['registered'].concat arguments
 
     @client.addListener 'message', (nick, channel, msg, res) =>
       @emit.apply this, arguments
@@ -134,6 +134,8 @@ class Domo extends EventEmitter
 
     return @client
 
+  disconnect: ->
+    @client.disconnect()
 
   route: (path, middlewares..., fn) ->
     @routes[path] ?= []

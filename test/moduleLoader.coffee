@@ -13,7 +13,6 @@ createRes = (msg) ->
   prefix: '!test@test.com'
 
 createModule = (num = 2, suffix = '')->
-  mkdirp.sync 'node_modules/test-module'
   fs.writeFileSync 'node_modules/test-module/index.js', """
     module.exports = {
       foo: function() {
@@ -27,13 +26,15 @@ createModule = (num = 2, suffix = '')->
     }
   """
 
-removeModules = ->
-  rimraf.sync 'node_modules/test_module'
-
-
 describe 'Module loader', ->
+  domo = null
+
+  beforeEach ->
+    mkdirp.sync 'node_modules/test-module'
+
   afterEach ->
-    removeModules()
+    rimraf.sync 'node_modules/test-module'
+    domo.stop 'test-module'
 
   it 'should be able to load modules', (done) ->
     createModule()
@@ -79,6 +80,79 @@ describe 'Module loader', ->
           assert.equal domo.modules['test-module'].foo(), 3
 
           done()
+
+  it 'should be able to reload modules when domo is connected to irc', (done) ->
+    createModule()
+
+    domo = new Domo
+      nick: 'domox'
+      address: 'irc.freenode.org'
+      channels: ['#domo-kun']
+
+    domo.connect()
+
+    domo.on 'registered', ->
+
+      domo.load 'test-module', (err) ->
+        throw err if err?
+
+        assert.equal domo.modules['test-module'].foo(), 2
+
+        domo.stop 'test-module', (err) ->
+
+          throw err if err?
+          assert.ok not domo.modules['test-module']?
+
+          createModule(15)
+
+          domo.load 'test-module', (err) ->
+            throw err if err?
+            assert.equal domo.modules['test-module'].foo(), 15
+
+            done()
+
+  it 'should be able to reload modules through message dispatcher when domo is connected to irc', (done) ->
+    createModule()
+
+    helloSaid = false
+
+    domo = new Domo
+      nick: 'domox'
+      address: 'irc.freenode.org'
+      channels: ['#domo-kun']
+      users: [
+        username: 'admin'
+        password: 'admin'
+      ]
+
+    domo.use domo.basicRoutes
+
+    domo.connect()
+
+    domo.on 'registered', ->
+
+      domo.say = (channel, message) ->
+        return helloSaid = true if message is 'hello there'
+
+        return unless helloSaid
+
+        done() if message is 'hello theree'
+
+      res = createRes 'hello'
+
+      res.params =
+        username: 'admin'
+        password: 'admin'
+
+      domo.authenticate res, ->
+        domo.matchRoutes '!load test-module', createRes('!load test-module')
+        domo.matchRoutes 'hello', createRes('hello')
+        domo.matchRoutes '!stop test-module', createRes('!load test-module')
+        createModule(12, 'e')
+        domo.matchRoutes '!load test-module', createRes('!load test-module')
+        domo.matchRoutes 'hello', createRes('hello')
+
+
 
   it 'should register all routes', (done) ->
     createModule()
