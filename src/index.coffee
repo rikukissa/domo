@@ -78,9 +78,19 @@ class Domo extends EventEmitter
       @warn "Module #{mod} uses deprecated 'init' method. Init/destruct methods are deprecated since 0.2"
       module.init(@)
 
+    unless module.routes?
+      return cb?(null)
+
     # Register module routes
-    if module.routes?
-      @route path, fn for path, fn of module.routes
+
+    # Array syntax
+    if _.isArray module.routes
+      for route in module.routes
+        @route route.path, route.handler
+      return cb?(null)
+
+    # Object syntax
+    @route path, fn for path, fn of module.routes
 
     cb?(null)
 
