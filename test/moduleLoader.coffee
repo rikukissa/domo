@@ -81,79 +81,6 @@ describe 'Module loader', ->
 
           done()
 
-  it 'should be able to reload modules when domo is connected to irc', (done) ->
-    createModule()
-
-    domo = new Domo
-      nick: 'domox'
-      address: 'irc.freenode.org'
-      channels: ['#domo-kun']
-
-    domo.connect()
-
-    domo.on 'registered', ->
-
-      domo.load 'test-module', (err) ->
-        throw err if err?
-
-        assert.equal domo.modules['test-module'].foo(), 2
-
-        domo.stop 'test-module', (err) ->
-
-          throw err if err?
-          assert.ok not domo.modules['test-module']?
-
-          createModule(15)
-
-          domo.load 'test-module', (err) ->
-            throw err if err?
-            assert.equal domo.modules['test-module'].foo(), 15
-
-            done()
-
-  it 'should be able to reload modules through message dispatcher when domo is connected to irc', (done) ->
-    createModule()
-
-    helloSaid = false
-
-    domo = new Domo
-      nick: 'domox'
-      address: 'irc.freenode.org'
-      channels: ['#domo-kun']
-      users: [
-        username: 'admin'
-        password: 'admin'
-      ]
-
-    domo.use domo.basicRoutes
-
-    domo.connect()
-
-    domo.on 'registered', ->
-
-      domo.say = (channel, message) ->
-        return helloSaid = true if message is 'hello there'
-
-        return unless helloSaid
-
-        done() if message is 'hello theree'
-
-      res = createRes 'hello'
-
-      res.params =
-        username: 'admin'
-        password: 'admin'
-
-      domo.authenticate res, ->
-        domo.matchRoutes '!load test-module', createRes('!load test-module')
-        domo.matchRoutes 'hello', createRes('hello')
-        domo.matchRoutes '!stop test-module', createRes('!load test-module')
-        createModule(12, 'e')
-        domo.matchRoutes '!load test-module', createRes('!load test-module')
-        domo.matchRoutes 'hello', createRes('hello')
-
-
-
   it 'should register all routes', (done) ->
     createModule()
 
@@ -173,20 +100,18 @@ describe 'Module loader', ->
 
     domo = new Domo()
 
-    domo.say = (channel, message) ->
-      throw new Error 'module route was not destroyed properly'
-
     domo.load 'test-module', (err) ->
       throw err if err?
+
+      assert.equal domo.routes['hello'].length, 1
 
       domo.stop 'test-module', (err) ->
         throw err if err?
 
-        domo.matchRoutes 'hello', createRes 'hello world'
+        assert.equal domo.routes['hello'].length, 0
+        done()
 
-        setTimeout ->
-          done()
-        , 10
+
 
   it 'should keep modules working even if they are loaded/unloaded multiple times', (done) ->
     createModule()

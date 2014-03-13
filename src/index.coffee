@@ -25,7 +25,7 @@ class Domo extends EventEmitter
     @authedClients = []
     @middlewares = []
     @config = @config || {}
-    @routes = []
+    @routes = {}
 
     @use _.bind responseConstructor, this
     @load module for module in @config.modules if @config.modules?
@@ -106,11 +106,20 @@ class Domo extends EventEmitter
 
     delete @modules[mod]
 
-    # Delete routes
-    if module.routes?
-      @destroyRoute path, fn for path, fn of module.routes
+    end = =>
+      @notify "Stopped module #{mod}"
+      cb?(null)
 
-    @notify "Stopped module #{mod}"
+    unless module.routes?
+      return end()
+
+    # Delete array style routes
+    if _.isArray module.routes
+      @destroyRoute route.path, route.handler for route in module.routes
+      return end()
+
+    # Delete object style routes
+    @destroyRoute path, fn for path, fn of module.routes
 
     return cb?(null)
 
@@ -162,7 +171,6 @@ class Domo extends EventEmitter
     itemIndex = @routes[path].indexOf routeItem
 
     @routes[path].splice itemIndex, 1
-
 
   matchRoutes: (path, data) ->
     return unless (result = @router.match path)?
