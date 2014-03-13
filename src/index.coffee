@@ -5,7 +5,6 @@ colors       = require 'colors'
 Router       = require 'routes'
 EventEmitter = require('events').EventEmitter
 
-messaging = require './lib/messaging'
 responseConstructor = require './lib/response-constructor'
 
 class Domo extends EventEmitter
@@ -21,10 +20,17 @@ class Domo extends EventEmitter
     @use _.bind responseConstructor, this
     @load module for module in @config.modules if @config.modules?
 
-  error: messaging.error
-  notify: messaging.notify
-  warn: messaging.warn
-  say: messaging.say
+  error: (messages...) ->
+    console.log 'Error:'.red, messages.join('\n').red
+
+  notify: (messages...) ->
+    console.log 'Notify:'.green, messages.join('\n').green if @config.debug?
+
+  warn: (messages...) ->
+    console.log 'Warning:'.yellow, messages.join('\n').yellow
+
+  say: (channel, msg) =>
+    @client.say channel, msg
 
   join: (channel, cb) ->
     @client.join channel, =>
