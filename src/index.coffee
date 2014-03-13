@@ -5,20 +5,22 @@ colors       = require 'colors'
 Router       = require 'routes'
 EventEmitter = require('events').EventEmitter
 
-responseConstructor = (res, next) ->
-  res.channel = res.args[0]
-  res.message = res.args[1]
-  res.username = res.user
-
-  res.user = unless @authedClients.hasOwnProperty(res.prefix)
-    null
-  else
-    @authedClients[res.prefix]
-
-  next()
-
-
 class Domo extends EventEmitter
+
+  responseConstructor = (res, next) ->
+    res.channel = res.args[0]
+    res.message = res.args[1]
+    res.username = res.user
+
+    res.user = unless @authedClients.hasOwnProperty(res.prefix)
+      null
+    else
+      @authedClients[res.prefix]
+
+    next()
+
+  messaging = require './lib/messaging'
+
   constructor: (@config) ->
     @router = new Router
     @modules = {}
@@ -30,17 +32,10 @@ class Domo extends EventEmitter
     @use _.bind responseConstructor, this
     @load module for module in @config.modules if @config.modules?
 
-  error: (msgs...) ->
-    console.log 'Error:'.red, msgs.join('\n').red if @config.debug?
-
-  notify: (msg) ->
-    console.log 'Notify:'.green, msg.green
-
-  warn: (msg) ->
-    console.log 'Warning:'.yellow, msg.yellow
-
-  say: (channel, msg) =>
-    @client.say channel, msg
+  error: messaging.error
+  notify: messaging.notify
+  warn: messaging.warn
+  say: messaging.say
 
   join: (channel, cb) ->
     @client.join channel, =>
