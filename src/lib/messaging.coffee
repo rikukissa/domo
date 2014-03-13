@@ -10,5 +10,5 @@ module.exports =
   warn: (messages...) ->
     console.log 'Warning:'.yellow, messages.join('\n').yellow
 
-  say: (channel, msg) =>
+  say: (channel, msg) ->
     @client.say channel, msg
