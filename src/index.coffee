@@ -5,21 +5,10 @@ colors       = require 'colors'
 Router       = require 'routes'
 EventEmitter = require('events').EventEmitter
 
+messaging = require './lib/messaging'
+responseConstructor = require './lib/response-constructor'
+
 class Domo extends EventEmitter
-
-  responseConstructor = (res, next) ->
-    res.channel = res.args[0]
-    res.message = res.args[1]
-    res.username = res.user
-
-    res.user = unless @authedClients.hasOwnProperty(res.prefix)
-      null
-    else
-      @authedClients[res.prefix]
-
-    next()
-
-  messaging = require './lib/messaging'
 
   constructor: (@config) ->
     @router = new Router
@@ -45,33 +34,28 @@ class Domo extends EventEmitter
     @client.part channel, =>
       cb.apply this, arguments if cb?
 
-  load: (mod, cb) =>
+  load: (moduleName, cb) =>
     try
-      module = require(mod)
+      module = require(moduleName)
     catch err
       msg = if err.code is 'MODULE_NOT_FOUND'
-        "Module #{mod} not found"
+        "Module #{moduleName} not found"
       else
-        "Module #{mod} cannot be loaded"
+        "Module #{moduleName} cannot be loaded"
 
       @error msg
       return cb?(msg)
 
-    if @modules.hasOwnProperty mod
-      msg = "Module #{mod} already loaded"
+    if @modules.hasOwnProperty moduleName
+      msg = "Module #{moduleName} already loaded"
       @error msg
       return cb?(msg)
 
-    @notify "Loaded module #{mod}"
+    @notify "Loaded module #{moduleName}"
 
     module = new Module(@) if typeof Module is 'function'
 
-    @modules[mod] = module
-
-    # DEPRECATED
-    if module.init?
-      @warn "Module #{mod} uses deprecated 'init' method. Init/destruct methods are deprecated since 0.2"
-      module.init(@)
+    @modules[moduleName] = module
 
     unless module.routes?
       return cb?(null)
