@@ -57,6 +57,7 @@ class Domo extends EventEmitter
 
     @modules[moduleName] = module
 
+    module.load?.call this
     unless module.routes?
       return cb?(null)
 
@@ -84,7 +85,7 @@ class Domo extends EventEmitter
     module = @modules[mod]
 
     delete @modules[mod]
-
+    module.stop?.call this
     end = =>
       @notify "Stopped module #{mod}"
       cb?(null)
