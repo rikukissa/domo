@@ -2,9 +2,9 @@ _            = require 'underscore'
 fs           = require 'fs'
 irc          = require 'irc'
 colors       = require 'colors'
-Router       = require 'routes'
 EventEmitter = require('events').EventEmitter
 
+Router    = require './lib/router'
 messaging = require './lib/messaging'
 responseConstructor = require './lib/response-constructor'
 

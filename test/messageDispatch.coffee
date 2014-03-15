@@ -88,3 +88,31 @@ describe 'Message dispatcher', ->
 
     domo.matchRoutes 'hello world', createRes 'hello world'
 
+  it 'it should handle params correctly', (done) ->
+    domo = new Domo()
+
+    domo.route 'hello :what', (res) ->
+      assert.equal res.params.what, 'world'
+      done()
+
+    domo.matchRoutes 'hello world', createRes()
+
+  it 'it should handle multiple params correctly', (done) ->
+    domo = new Domo()
+
+    domo.route 'hello :a :b :c', (res) ->
+      assert.equal res.params.a, 'foo'
+      assert.equal res.params.b, 'bar'
+      assert.equal res.params.c, 'baz'
+      done()
+
+    domo.matchRoutes 'hello foo bar baz', createRes()
+
+  it 'it should handle matching with non-uri charachers', (done) ->
+    domo = new Domo()
+
+    domo.route 'hello *', (res) ->
+      assert.equal res.splats[0], '%'
+      done()
+
+    domo.matchRoutes 'hello %', createRes()
