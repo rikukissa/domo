@@ -108,7 +108,6 @@ class Domo extends EventEmitter
     @client = new irc.Client @config.address, @config.nick, @config
 
     @client.addListener 'error', (msg) =>
-      @emit.apply this, ['error'].concat arguments
       @error msg
 
     @client.addListener 'registered', =>
