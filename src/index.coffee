@@ -68,7 +68,7 @@ class Domo extends EventEmitter
     # Array syntax
     if _.isArray module.routes
       for route in module.routes
-        @route route.path, route.handler
+        @route.apply this, [route.path].concat(route.middlewares or []).concat route.handler
       return cb?(null)
 
     # Object syntax
