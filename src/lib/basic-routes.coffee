@@ -4,44 +4,46 @@ _.str = require 'underscore.string'
 pkg = require './package'
 
 module.exports = ->
-  init: (domo) ->
-    domo.route '!domo', (res) ->
-      domo.say res.channel, """
+  init: ->
+    @route '!domo', (res) ->
+      @say res.channel, """
         h :) v#{pkg.version}
-        Current channels: #{(chan for chan of domo.channels).join(', ')}
+        Current channels: #{(chan for chan of @channels).join(', ')}
         #{pkg.repository.url}
         """
-    domo.route '!auth :username :password', domo.authenticate, (res) ->
-      domo.say res.nick, "You are now authed. Hi #{_.str.capitalize(res.user.username)}!"
+    @route '!auth :username :password', @authenticate, (res) ->
+      @say res.nick, "You are now authed. Hi #{_.str.capitalize(res.user.username)}!"
 
-    domo.route '!join :channel', domo.requiresUser, (res) ->
-      domo.join res.params.channel
+    @route '!join :channel', @requiresUser, (res) ->
+      @join res.params.channel
 
-    domo.route '!join :channel :password', domo.requiresUser, (res) ->
-      domo.join res.params.channel + ' ' + res.params.password
+    @route '!join :channel :password', @requiresUser, (res) ->
+      @join res.params.channel + ' ' + res.params.password
 
-    domo.route '!part :channel', domo.requiresUser, (res) ->
-      domo.part res.params.channel
+    @route '!part :channel', @requiresUser, (res) ->
+      @part res.params.channel
 
-    domo.route '!load :module', domo.requiresUser, (res) ->
-      domo.load res.params.module, (err) ->
-        return domo.say res.channel, err if err?
-        domo.say res.channel, "Module '#{res.params.module}' loaded!"
+    @route '!load :module', @requiresUser, (res) ->
+      @load res.params.module, (err) ->
+        return @say res.channel, err if err?
+        @say res.channel, "Module '#{res.params.module}' loaded!"
 
-    domo.route '!stop :module', domo.requiresUser, (res) ->
-      domo.stop res.params.module, (err) ->
-        return domo.say res.channel, err if err?
-        domo.say res.channel, "Module '#{res.params.module}' stopped!"
+    @route '!stop :module', @requiresUser, (res) ->
+      @stop res.params.module, (err) ->
+        return @say res.channel, err if err?
+        @say res.channel, "Module '#{res.params.module}' stopped!"
 
-    domo.route '!reload', domo.requiresUser, (res) ->
-      _.flatten(_.map domo.modules, (module, moduleName) ->
+    @route '!reload', @requiresUser, (res) ->
+      _.flatten(_.map @modules, (module, moduleName) =>
         [
-          Q.nfcall(domo.stop, moduleName),
-          Q.nfcall(domo.load, moduleName)
+          Q.nfcall(@stop, moduleName),
+          Q.nfcall(@load, moduleName)
         ]
       ).reduce(Q.when, Q())
-        .then ->
-          domo.say res.channel, "Reloaded modules #{_.keys(domo.modules).join(', ')}!"
-        .catch (e) ->
-          domo.error e.message
-          domo.say res.channel, "Couldn't reload all modules"
+
+        .then =>
+          @say res.channel, "Reloaded modules #{_.keys(@modules).join(', ')}!"
+
+        .catch (e) =>
+          @error e.message
+          @say res.channel, "Couldn't reload all modules"

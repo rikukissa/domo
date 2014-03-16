@@ -168,8 +168,7 @@ class Domo extends EventEmitter
     , fn).apply this, arguments
 
   use: (mw) ->
-    if typeof mw is 'object'
-      return mw.init(this)
+    return mw.init.call this if typeof mw is 'object'
 
     @middlewares.push mw
 
