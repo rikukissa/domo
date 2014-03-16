@@ -24,10 +24,11 @@
   },
   "keywords": [
     "irc",
-    "bot"
+    "bot",
+    "domo"
   ],
   "author": "Riku Rouvila",
-  "license": "BSD",
+  "license": "MIT",
   "devDependencies": {
     "mkdirp": "~0.3.5",
     "rimraf": "~2.2.6",
