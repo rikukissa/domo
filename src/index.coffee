@@ -51,6 +51,8 @@ class Domo extends EventEmitter
       @error msg
       return cb?(msg)
 
+    module = module.call this, this if typeof module is 'function'
+
     @notify "Loaded module #{moduleName}"
 
     module = new Module(@) if typeof Module is 'function'
