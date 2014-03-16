@@ -3,7 +3,7 @@ _ = require 'underscore'
 _.str = require 'underscore.string'
 pkg = require './package'
 
-module.exports =
+module.exports = ->
   init: (domo) ->
     domo.route '!domo', (res) ->
       domo.say res.channel, """
