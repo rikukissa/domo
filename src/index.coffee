@@ -6,7 +6,7 @@ EventEmitter = require('events').EventEmitter
 
 Router    = require './lib/router'
 messaging = require './lib/messaging'
-responseConstructor = require './lib/response-constructor'
+response = require './lib/response-constructor'
 
 class Domo extends EventEmitter
 
@@ -18,7 +18,7 @@ class Domo extends EventEmitter
     @config = @config || {}
     @routes = {}
 
-    @use _.bind responseConstructor, this
+    @use response
     @load module for module in @config.modules if @config.modules?
 
   error: messaging.error

@@ -3,9 +3,6 @@ module.exports = (res, next) ->
   res.message = res.args[1]
   res.username = res.user
 
-  res.user = unless @authedClients.hasOwnProperty(res.prefix)
-    null
-  else
-    @authedClients[res.prefix]
+  res.user = @authedClients[res.prefix]
 
   next()
