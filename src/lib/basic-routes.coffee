@@ -6,32 +6,41 @@ pkg = require './package'
 module.exports = ->
   init: ->
     @route '!domo', (res) ->
-      @say res.channel, """
+      res.send """
         h :) v#{pkg.version}
         Current channels: #{(chan for chan of @channels).join(', ')}
         #{pkg.repository.url}
         """
     @route '!auth :username :password', @authenticate, (res) ->
-      @say res.nick, "You are now authed. Hi #{_.str.capitalize(res.user.username)}!"
+      res.send "You are now authed. Hi #{_.str.capitalize(res.user.username)}!"
 
-    @route '!join :channel', @requiresUser, (res) ->
-      @join res.params.channel
+    @route '!join *', @requiresUser, (res) ->
+      channels = res.splats[0].split(' ').map (channel) ->
+        channel = "##{channel}" unless channel[0] is '#'
+        channel.replace ':', ' '
+      @join channel for channel in channels
 
-    @route '!join :channel :password', @requiresUser, (res) ->
-      @join res.params.channel + ' ' + res.params.password
+    @route '!part *', @requiresUser, (res) ->
+      channels = res.splats[0].split(' ').map (channel) ->
+        channel = "##{channel}" unless channel[0] is '#'
+        channel
+      @part channel for channel in channels
 
-    @route '!part :channel', @requiresUser, (res) ->
-      @part res.params.channel
-
-    @route '!load :module', @requiresUser, (res) ->
-      @load res.params.module, (err) ->
-        return @say res.channel, err if err?
-        @say res.channel, "Module '#{res.params.module}' loaded!"
+    @route '!load *', @requiresUser, (res) ->
+      modules = res.splats[0].split(' ')
+      for module in modules
+        do (module) ->
+          @load module, (err) ->
+            return res.send err if err?
+            res.send "Module '#{module}' loaded!"
 
     @route '!stop :module', @requiresUser, (res) ->
-      @stop res.params.module, (err) ->
-        return @say res.channel, err if err?
-        @say res.channel, "Module '#{res.params.module}' stopped!"
+      modules = res.splats[0].split(' ')
+      for module in modules
+        do (module) ->
+          @stop module, (err) ->
+            return res.send err if err?
+            res.send "Module '#{module}' stopped!"
 
     @route '!reload', @requiresUser, (res) ->
       _.flatten(_.map @modules, (module, moduleName) =>
@@ -42,8 +51,8 @@ module.exports = ->
       ).reduce(Q.when, Q())
 
         .then =>
-          @say res.channel, "Reloaded modules #{_.keys(@modules).join(', ')}!"
+          res.send "Reloaded modules #{_.keys(@modules).join(', ')}!"
 
         .catch (e) =>
           @error e.message
-          @say res.channel, "Couldn't reload all modules"
+          res.send "Couldn't reload all modules"

@@ -5,8 +5,8 @@ colors       = require 'colors'
 EventEmitter = require('events').EventEmitter
 
 Router    = require './lib/router'
+Response = require './lib/response'
 messaging = require './lib/messaging'
-response = require './lib/response-constructor'
 
 class Domo extends EventEmitter
 
@@ -18,7 +18,6 @@ class Domo extends EventEmitter
     @config = @config || {}
     @routes = {}
 
-    @use response
     @load module for module in @config.modules if @config.modules?
 
   error: messaging.error
@@ -158,7 +157,7 @@ class Domo extends EventEmitter
 
     @routes[result.route].forEach (route) =>
       chain = @wrap route.fn, route.middlewares
-      chain.call this, _.extend result, data
+      chain.call this, new Response @, _.extend(result, data)
 
   wrap: (fn, middlewares) -> () =>
     args = Array.prototype.slice.call(arguments, 0)

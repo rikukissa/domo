@@ -7,7 +7,7 @@ createRes = (msg) ->
   args: ['#test', msg]
   user: 'Test'
   prefix: '!test@test.com'
-
+  message: message
 
 describe 'Middleware wrapper', ->
 
