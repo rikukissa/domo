@@ -1,0 +1,78 @@
+<!DOCTYPE html><html><head><title>Domo-kun</title><link rel="stylesheet" href="css/style.css"><link rel="shortcut icon" href="favicon.png"></head><body><a href="https://github.com/rikukissa/domo" class="fork-me"><img src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a><div class="domo"></div><div class="main-container"><div class="wrap"><h1 class="title title-main">Domo-kun</h1><h3 class="title title-subtitle">Write your own IRC-bot with ease</h3><div class="section"><div class="column column1-2"><p>Domo-kun is a minimalistic IRC-bot framework.</p><p>Domo lets you create your own IRC-bot with the functionality you need in just few minutes.</p><p>Write your custom routers and let Domo do all the work for you!</p></div><div class="column column1-2"><div class="code-header"><span class="number">1:</span> Install domo-kun module</div><pre><code data-language="shell">npm install domo-kun</code></pre><div class="code-header"><span class="number">2:</span> Initialize Domo, set up routes and you are done!</div><pre><code data-language="javascript">var Domo = require('domo-kun');
+var domo = new Domo(config);
+domo.use(domo.basicRoutes());
+domo.route('Hello domo!', function(res) {
+   res.send('Well hello there ' + res.nick + '!');
+});
+domo.connect();</code></pre></div></div><div class="section"><h1 class="title title-section title-section-only">Configuration</h1><div class="column column1-2"><pre><code data-language="javascript">var config = {
+   nick: 'Domo',
+   userName: 'Domo',
+   realName: 'Domo the awesome IRC-bot',
+   address: 'irc.freenode.org',
+   modules: ['domo-url', 'domo-eval'],
+   channels: ['#domo'],
+   users: [
+     {
+       username: 'riku',
+       password: 'admin'
+     }
+   ],
+   debug: true
+};</code></pre></div><div class="column column1-2"><ul class="list"><li class="list-item"><span class="list-item-attribute">nick</span>Nickname of your bot</li><li class="list-item"><span class="list-item-attribute">userName</span>Username of your bot</li><li class="list-item"><span class="list-item-attribute">realName</span>Real name of your bot</li><li class="list-item"><span class="list-item-attribute">address</span>Address of the IRC server you want your bot to connect to</li><li class="list-item">List of modules you want to auto load</li><li class="list-item"><span class="list-item-attribute">channels</span>List of channels you want your bot to join after connecting to server<br>( note that channel password can be used in the channel string '#domo pwd123' )</li><li class="list-item"><span class="list-item-attribute">users</span>List of user-objects allowed to control your bot<br>( note that some of the built-in IRC commands requires an authenticated user )</li><li class="list-item"><span class="list-item-attribute">debug</span>enable/disable logging</li></ul></div><div class="column column1-1"><h2 class="title title-section">Enabling basic commands</h2><p>From Domo-kun 0.2 forwards, basic routes (!join, !auth etc.) are not initialized automatically.&nbsp;
+To enable these commands you have to use <strong>domo.use</strong> to register <strong>domo.basicRoutes()</strong></p><pre><code data-language="javascript">domo.use(domo.basicRoutes());
+</code></pre></div></div><div class="section"><h1 class="title title-section">Routes</h1><h3 class="title-method">domo.route(path, callback);</h3><div class="column column1-1"><div class="column column1-2"><p>For routing Domo uses a router similar to&nbsp;<a href="https://github.com/aaronblohowiak/routes.js" target="_blank">Routes.js</a> library.
+Received IRC messages are matched to defined paths and the callback functions are called.</p><p><strong>domo.route</strong> method allow you to define Sinatra style routes for received message strings.
+It's possible to define dynamic parameters, use regular expressions and much more.</p><p>You'll find more about Domo's routing system from&nbsp;<a href="https://github.com/aaronblohowiak/routes.js" target="_blank">Routes.js documentation</a></p></div><div class="column column1-2"><pre><code data-language="javascript">domo.route('Hello Domo!', function(res) {
+  res.send('Hi ' + res.nick + '!');
+});</code></pre><pre><code data-language="javascript">domo.route('Hello :name!', function(res) {
+  if(res.params.name === 'Domo') {
+    res.send('Hi ' + res.nick + '!');
+  }
+});</code></pre></div></div></div><div class="section"><h1 id="response" class="title title-section title-section-only">Response object</h1><div class="column column1-1"><div class="column column1-2"><pre><code data-language="javascript">{
+  params: {},
+  splats: [],
+  prefix: 'riku!riku@example.com',
+  nick: 'riku',
+  user: null,
+  host: 'example.com',
+  channel: '#domo',
+  message: 'hello domo!',
+  username: 'riku'
+}</code></pre></div><div class="column column1-2"><ul class="list"><li class="list-item"><span class="list-item-attribute">params</span>Route parameters (see example above)</li><li class="list-item"><span class="list-item-attribute">splats</span>Captured regular expression groups etc. (see&nbsp;<a href="https://github.com/aaronblohowiak/routes.js" target="_blank">Routes.js documentation</a>)</li><li class="list-item"><span class="list-item-attribute">prefix</span>IRC user information - self explanatory</li><li class="list-item"><span class="list-item-attribute">nick</span>IRC user information - self explanatory</li><li class="list-item"><span class="list-item-attribute">user</span>User object if user is authenticated. Otherwise null.</li><li class="list-item"><span class="list-item-attribute">host</span>IRC user information - self explanatory</li><li class="list-item"><span class="list-item-attribute">channel</span>Channel where message was sent</li><li class="list-item"><span class="list-item-attribute">message</span>Received message</li><li class="list-item"><span class="list-item-attribute">username</span>IRC user information - self explanatory</li></ul></div></div></div><div class="section"><h1 class="title title-section">Middlewares</h1><h3 class="title-method">domo.use(middleware);</h3><div class="column column1-1"><div class="column column1-1"><pre><code data-language="javascript">// Responds only if the user who sends the message is authenticated
+domo.route('Hello Domo!', domo.requiresUser, function(res) {
+  res.send('Hi ' + res.nick + '!');
+});</code></pre></div><div class="column column1-1"><p>You can specify route specific middleware functions by adding them as arguments before the callback function.</p><p>Currently the only built-in middleware is<strong>domo.requiresUser</strong>, that checks if the user who sends a message is authenticated.</p><p>Creating custom middlewares is also possible.</p></div></div><div class="column column1-1"><div class="code-header">Example custom middleware</div><div class="column column1-1"><pre><code data-language="javascript">// Reverses received messages
+var reverseMessages = function(res, next) {
+    res.message = res.message.split('').reverse().join('');
+    next();
+};
+domo.route('Hello Domo!', reverseMessages, function(res) {
+  res.send(res.message); // !omoD olleH
+});</code></pre></div><div class="column column1-1"><div class="column column1-2">It's also possible to use it automatically for all routes by registering it with<strong> domo.use</strong> method.</div><div class="column column1-2"><pre><code data-language="javascript">domo.use(reverseMessages);
+</code></pre></div></div></div></div><div class="section"><h1 id="modules" class="title title-section">Modules</h1><div class="column column1-1"><div class="column column1-2"><p>Domo allows you to write your own modules that can be loaded on runtime without having to restart your Domo instance.</p><p>There's also a number of existing plugins out there like&nbsp;<a href="https://github.com/rikukissa/domo-imdb" target="_blank">domo-imdb</a> and &nbsp;<a href="https://github.com/rikukissa/domo-url" target="_blank">domo-url</a></p><p>Modules can be loaded with the built-in <strong>!load &lt;moduleName&gt;</strong>
+command and stopped with&nbsp; <strong>!stop &lt;moduleName&gt;</strong>.
+Module's code is refreshed every time it's loaded so hotswapping module code is possible.
+Both of these commands require <a href="#basicroutes"><strong>domo.basicRoutes()</strong></a>.</p><p>If you are looking for an example module, take a look at&nbsp;<a href="https://github.com/rikukissa/domo-imdb" target="_blank">domo-imdb</a>.</p><h2 id="modules-creating" class="title title-section">Creating your own module</h2><p>Modules can be constructed in a number of different ways.
+If module exports a property named "routes", Domo will automatically register those routes and destroy them when the module is stopped.
+The routes property can be either an object with path:handler pairs (Example 1) or an array of routes (Example 2).</p></div><div class="column column1-2"><pre><code data-language="javascript">// domo-time
+module.exports.routes = {
+  'What time is it Domo?': function(res) {
+    var time = new Date().toLocaleTimeString();
+    res.send("It's " + time);
+  }
+}</code></pre><pre><code data-language="javascript">// domo-time with array routes syntax
+module.exports.routes = [
+  {
+    path: 'What time is it Domo?',
+    middlewares: [],
+    handler: function(res) {
+      var time = new Date().toLocaleTimeString();
+      res.send("It's " + time);
+    }
+  }
+]
+</code></pre></div></div></div><div class="section"><h1 id="basicroutes" class="title title-section title-section-only">Basic routes</h1><div class="column column1-1"><p>From Domo-kun 0.2 forwards, basic routes are not initialized automatically.&nbsp;
+To enable these commands you have to use <strong>domo.use</strong> to register <strong>domo.basicRoutes()</strong><pre><code data-language="javascript">domo.use(domo.basicRoutes());
+</code></pre></p><ul class="commands"><li><div class="command">!domo</div><span class="command-description">Print Domo info</span></li><li><div class="command">!auth &lt;username&gt; &lt;password&gt;</div><span class="command-description">Authenticate (Probably better to do this with private message)</span></li><li><div class="command">!join &lt;channel&gt;[:&lt;password&gt;]*</div><div class="command-requires-authentication">Requires authentication</div><span class="command-description">Tell Domo to join channel.
+Can include multiple channels also&nbsp;<strong>!join #chan1:password #chan2 #chan3</strong></span></li><li><div class="command">!part &lt;channel&gt;*</div><div class="command-requires-authentication">Requires authentication</div><span class="command-description">Tell Domo to leave channel
+Can include multiple channels also&nbsp;<strong>!part #chan1 #chan2 #chan3</strong></span></li><li><div class="command">!load &lt;module&gt;*</div><div class="command-requires-authentication">Requires authentication</div><span class="command-description">Load domo modules from node_modules directory</span></li><li><div class="command">!stop &lt;module&gt;*</div><div class="command-requires-authentication">Requires authentication</div><span class="command-description">Stop module and detach it from message events</span></li></ul></div></div><div class="footer"><a href="https://github.com/rikukissa/domo/">GitHub</a></div></div></div><script src="js/bundle.js"></script></body></html>
