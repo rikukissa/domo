@@ -13,7 +13,7 @@ IRC-bot that lets you easily write your own tasks for your own needs.
 ```
 npm install domo-kun domo-url
 ```
-```
+```javascript
 var Domo, domo;
 Domo = require('domo-kun');
 
