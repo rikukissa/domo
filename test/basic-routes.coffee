@@ -29,6 +29,7 @@ describe 'Domo basic routes', ->
     domo.join = (chan) ->
       assert.equal chan, '#foo'
       done()
+      catch: ->
 
     domo.matchRoutes '!join #foo', res
 
@@ -54,6 +55,7 @@ describe 'Domo basic routes', ->
     domo.part = (chan) ->
       assert.equal chan, '#foo'
       done()
+      catch: ->
 
     domo.matchRoutes '!part #foo', res
 

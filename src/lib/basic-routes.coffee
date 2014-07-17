@@ -18,13 +18,17 @@ module.exports = ->
       channels = res.splats[0].split(' ').map (channel) ->
         channel = "##{channel}" unless channel[0] is '#'
         channel.replace ':', ' '
-      @join channel for channel in channels
+
+      @join channels
+      .catch @error
 
     @route '!part *', @requiresUser, (res) ->
       channels = res.splats[0].split(' ').map (channel) ->
         channel = "##{channel}" unless channel[0] is '#'
         channel
-      @part channel for channel in channels
+
+      @part channels
+      .catch @error
 
     @route '!load *', @requiresUser, (res) ->
       modules = res.splats[0].split(' ')

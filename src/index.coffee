@@ -2,6 +2,7 @@ _            = require 'underscore'
 fs           = require 'fs'
 irc          = require 'irc'
 colors       = require 'colors'
+Promise      = require 'bluebird'
 EventEmitter = require('events').EventEmitter
 
 Router    = require './lib/router'
@@ -192,5 +193,24 @@ class Domo extends EventEmitter
     next()
 
   basicRoutes: require './lib/basic-routes'
+
+setChannelState = (method) -> (channels, callback) ->
+  if typeof channels is 'string'
+    channels = [channels]
+
+  promise = Promise.all _.map channels, (channel) ->
+    @client[method + 'Async'] channel
+
+  return promise unless callback?
+
+  promise.then =>
+    args = Array.prototype.slice.call arguments, 0
+    callback.apply this, [null].concat args
+  , callback.bind this
+
+  undefined
+
+Domo::part = setChannelState 'part'
+Domo::join = setChannelState 'join'
 
 module.exports = Domo
