@@ -34,8 +34,15 @@ module.exports = ->
       modules = res.splats[0].split(' ')
       for module in modules
         do (module) ->
+
           @load module, (err) ->
-            return res.send err if err?
+            if err?
+              errorMsg = if err.code is 'MODULE_NOT_FOUND'
+                "Module #{moduleName} not found"
+              else
+                "Module #{moduleName} cannot be loaded"
+              return res.send errorMsg
+
             res.send "Module '#{module}' loaded!"
 
     @route '!stop :module', @requiresUser, (res) ->
@@ -43,7 +50,7 @@ module.exports = ->
       for module in modules
         do (module) ->
           @stop module, (err) ->
-            return res.send err if err?
+            return res.send err.message if err?
             res.send "Module '#{module}' stopped!"
 
     @route '!reload', @requiresUser, (res) ->

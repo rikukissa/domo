@@ -1,8 +1,8 @@
 colors = require 'colors'
 
 module.exports =
-  error: (messages...) ->
-    console.log 'Error:'.red, messages.join('\n').red
+  error: (error) ->
+    console.log 'Error:'.red, error.message.red
 
   notify: (messages...) ->
     console.log 'Notify:'.green, messages.join('\n').green if @config.debug?

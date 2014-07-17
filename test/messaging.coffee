@@ -23,10 +23,10 @@ describe 'Domo messaging', ->
 
     console.log = (prefix, message) ->
       assert.equal prefix, 'Error:'.red
-      assert.equal message, 'foo\nbar\nbaz'.red
+      assert.equal message, 'foobar'.red
       done()
 
-    domo.error('foo', 'bar', 'baz')
+    domo.error new Error 'foobar'
 
   it 'should console.log warnings with color yellow', (done) ->
       domo = new Domo()

@@ -26,30 +26,17 @@ class Domo extends EventEmitter
   warn: messaging.warn
   say: messaging.say
 
-  join: (channel, cb) ->
-    @client.join channel, =>
-      cb.apply this, arguments if cb?
-
-  part: (channel, cb) ->
-    @client.part channel, =>
-      cb.apply this, arguments if cb?
-
   load: (moduleName, cb) =>
     try
       module = require(moduleName)
     catch err
-      msg = if err.code is 'MODULE_NOT_FOUND'
-        "Module #{moduleName} not found"
-      else
-        "Module #{moduleName} cannot be loaded"
-
-      @error msg
-      return cb?(msg)
+      @error err
+      return cb?(err)
 
     if @modules.hasOwnProperty moduleName
-      msg = "Module #{moduleName} already loaded"
-      @error msg
-      return cb?(msg)
+      err = new Error "Module #{moduleName} already loaded"
+      @error err
+      return cb?(err)
 
     module = module.call this, this if typeof module is 'function'
 
@@ -78,9 +65,9 @@ class Domo extends EventEmitter
 
   stop: (mod, cb) =>
     unless @modules.hasOwnProperty mod
-      msg = "Module #{mod} not loaded"
-      @error msg
-      return cb?(msg)
+      err = new Error "Module #{mod} not loaded"
+      @error err
+      return cb?(err)
 
     delete require.cache[require.resolve(mod)]
 
@@ -109,8 +96,7 @@ class Domo extends EventEmitter
     @notify "Connecting to server #{@config.address}."
     @client = new irc.Client @config.address, @config.nick, @config
 
-    @client.addListener 'error', (msg) =>
-      @error msg
+    @client.addListener 'error', @error
 
     @client.addListener 'registered', =>
       @emit.apply this, ['registered'].concat arguments
@@ -169,18 +155,19 @@ class Domo extends EventEmitter
 
   use: (mw) ->
     return mw.init.call this if typeof mw is 'object'
-
     @middlewares.push mw
 
-
   authenticate: (res, next) ->
-    return @error "Tried to authenticate. No users configured" unless @config.users?
-    return @say res.nick, "You are already authed." if @authedClients.hasOwnProperty res.prefix
+    unless @config.users?
+      return @error new Error "Tried to authenticate. No users configured"
+
+    if @authedClients.hasOwnProperty res.prefix
+      return @say res.nick, "You are already authed."
 
     user = res.user = _.findWhere(@config.users, {username: res.params.username, password: res.params.password})
 
     unless user?
-      @error "User #{res.prefix} tried to authenticate with bad credentials"
+      @error new Error "User #{res.prefix} tried to authenticate with bad credentials"
       return @say res.nick, "Authentication failed. Bad credentials."
 
     @authedClients[res.prefix] = user
@@ -189,7 +176,7 @@ class Domo extends EventEmitter
 
   requiresUser: (res, next) ->
     unless res.user?
-      return @error "User #{res.prefix} tried to use '#{res.route}' route"
+      return @error new Error "User #{res.prefix} tried to use '#{res.route}' route"
     next()
 
   basicRoutes: require './lib/basic-routes'
