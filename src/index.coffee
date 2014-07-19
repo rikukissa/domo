@@ -3,16 +3,16 @@ fs           = require 'fs'
 irc          = require 'irc'
 colors       = require 'colors'
 Promise      = require 'bluebird'
+Router       = require 'routes'
 EventEmitter = require('events').EventEmitter
 
-Router    = require './lib/router'
 Response = require './lib/response'
 messaging = require './lib/messaging'
 
 class Domo extends EventEmitter
 
   constructor: (@config) ->
-    @router = new Router
+    @router = Router()
     @modules = {}
     @authedClients = []
     @middlewares = []
