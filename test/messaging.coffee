@@ -1,6 +1,8 @@
 _      = require 'underscore'
 assert = require 'assert'
-Domo   = require '../'
+
+proxyquire = require 'proxyquire'
+messaging = require '../src/lib/messaging'
 
 createRes = (msg) ->
   args: ['#test', msg]
@@ -9,19 +11,24 @@ createRes = (msg) ->
 
 noopMw = (res, next) -> next()
 
-log = console.log
-
 describe 'Domo messaging', ->
 
-  afterEach ->
-    console.log = log
+  Domo = null
+  logOutput = null
+
+  logger = ->
+    logOutput.apply this, arguments
+
+  beforeEach ->
+    Domo = proxyquire '../src/index.coffee',
+      './lib/messaging': -> messaging logger
 
   it 'should console.log errors with color red', (done) ->
     domo = new Domo()
 
     lines = 0
 
-    console.log = (prefix, message) ->
+    logOutput = (prefix, message) ->
       assert.equal prefix, 'Error:'.red
       assert.equal message, 'foobar'.red
       done()
@@ -33,7 +40,7 @@ describe 'Domo messaging', ->
 
       lines = 0
 
-      console.log = (prefix, message) ->
+      logOutput = (prefix, message) ->
         assert.equal prefix, 'Warning:'.yellow
         assert.equal message, 'foo\nbar\nbaz'.yellow
         done()
@@ -45,7 +52,7 @@ describe 'Domo messaging', ->
 
       lines = 0
 
-      console.log = (prefix, message) ->
+      logOutput = (prefix, message) ->
         assert.equal prefix, 'Notify:'.green
         assert.equal message, 'foo\nbar\nbaz'.green
         done()
@@ -57,7 +64,7 @@ describe 'Domo messaging', ->
 
       lines = 0
 
-      console.log = (prefix, message) ->
+      logOutput = (prefix, message) ->
         throw new Error 'Notification logged even though its not allowed in config'
 
       domo.notify('foo', 'bar', 'baz')

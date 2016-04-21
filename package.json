@@ -5,7 +5,7 @@
     "node": "0.9.3"
   },
   "scripts": {
-    "test": "mocha --compilers coffee:coffee-script/register"
+    "test": "mocha --compilers coffee:coffee-script/register test"
   },
   "dependencies": {
     "irc": "0.3.4",
@@ -35,6 +35,7 @@
     "async": "~0.2.10",
     "mkdirp": "~0.3.5",
     "mocha": "^2.4.5",
+    "proxyquire": "^1.7.4",
     "rimraf": "~2.2.6"
   }
 }

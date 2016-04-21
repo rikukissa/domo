@@ -7,7 +7,7 @@ Router       = require 'routes'
 EventEmitter = require('events').EventEmitter
 
 Response = require './lib/response'
-messaging = require './lib/messaging'
+messaging = require('./lib/messaging') console.log
 
 class Domo extends EventEmitter
 
