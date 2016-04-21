@@ -185,7 +185,7 @@ setChannelState = (method) -> (channels, callback) ->
   if typeof channels is 'string'
     channels = [channels]
 
-  promise = Promise.all _.map channels, (channel) ->
+  promise = Promise.all _.map channels, (channel) =>
     @client[method + 'Async'] channel
 
   return promise unless callback?
