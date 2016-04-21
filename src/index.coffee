@@ -94,7 +94,7 @@ class Domo extends EventEmitter
 
   connect: ->
     @notify "Connecting to server #{@config.address}."
-    @client = new irc.Client @config.address, @config.nick, @config
+    @client = Promise.promisifyAll new irc.Client @config.address, @config.nick, @config
 
     @client.addListener 'error', @error
 
